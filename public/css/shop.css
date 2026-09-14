@@ -1,0 +1,472 @@
+/* ==========================================================================
+   1. STOREFRONT CORE THEME AND RESET
+   ========================================================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+body {
+    background-color: #FAFAFA;
+    color: #2D3748;
+    line-height: 1.5;
+}
+
+/* --- NAVBAR ACCENTS --- */
+.shop-navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 10%;
+    background: #ffffff;
+    border-bottom: 1px solid #E5E9F0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.nav-brand {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1B5E20;
+    letter-spacing: -0.5px;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: #4A5568;
+    font-weight: 600;
+    font-size: 14px;
+    margin-left: 25px;
+    transition: color 0.2s;
+}
+
+.nav-links a:hover {
+    color: #1B5E20;
+}
+
+.nav-track-btn {
+    background: #E8F5E9;
+    color: #2E7D32 !important;
+    padding: 8px 16px;
+    border-radius: 6px;
+}
+
+/* --- HERO CORE GRID --- */
+.shop-hero {
+    background: linear-gradient(rgba(17, 20, 45, 0.65), rgba(17, 20, 45, 0.65)), 
+                url('https://unsplash.com');
+    background-size: cover;
+    background-position: center;
+    padding: 100px 10%;
+    min-height: 65vh;
+    display: flex;
+    align-items: center;
+}
+
+.hero-overlay {
+    max-width: 800px;
+}
+
+.hero-overlay .badge {
+    background: #E8F5E9;
+    color: #2E7D32;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: inline-block;
+    margin-bottom: 20px;
+}
+
+.hero-overlay h1 {
+    font-size: 44px;
+    color: #ffffff;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 15px;
+    letter-spacing: -1px;
+}
+
+.hero-overlay p {
+    font-size: 18px;
+    color: #E2E8F0;
+    margin-bottom: 35px;
+    font-weight: 400;
+}
+
+.hero-actions {
+    display: flex;
+    gap: 16px;
+}
+
+.btn-primary {
+    background: #2E7D32;
+    color: #ffffff;
+    padding: 14px 28px;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 15px;
+    transition: background 0.2s;
+    box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
+}
+
+.btn-primary:hover { background: #1B5E20; }
+
+.btn-secondary {
+    border: 2px solid #ffffff;
+    color: #ffffff;
+    padding: 12px 26px;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 15px;
+    transition: all 0.2s;
+}
+
+.btn-secondary:hover { background: #ffffff; color: #11142D; }
+
+/* --- COMMERCIAL METRICS METRIC BAR --- */
+.b2b-notice-bar {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    padding: 40px 10%;
+    background: #ffffff;
+    border-bottom: 1px solid #E5E9F0;
+}
+
+.notice-card h3 {
+    font-size: 16px;
+    color: #1B5E20;
+    margin-bottom: 8px;
+    font-weight: 700;
+}
+
+.notice-card p {
+    font-size: 14px;
+    color: #718096;
+    line-height: 1.6;
+}
+
+/* ==========================================================================
+   2. TWO-COLUMN LAYOUT AND CATALOG GRID
+   ========================================================================== */
+.catalog-section {
+    padding: 60px 10%;
+}
+
+.section-title {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.section-title h2 {
+    font-size: 32px;
+    color: #11142D;
+    font-weight: 700;
+}
+
+.section-title p {
+    color: #718096;
+    font-size: 16px;
+}
+
+.catalog-container {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 40px;
+}
+
+/* --- SIDEBAR SELECTION PANEL --- */
+.categories-sidebar h3 {
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #A0AEC0;
+    margin-bottom: 15px;
+}
+
+.categories-sidebar ul {
+    list-style: none;
+}
+
+.categories-sidebar li a {
+    display: block;
+    padding: 10px 0;
+    color: #4A5568;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 15px;
+    border-bottom: 1px solid #F0F4F8;
+    transition: color 0.2s;
+}
+
+.categories-sidebar li.active a {
+    color: #1B5E20;
+    font-weight: 700;
+}
+
+.sidebar-help-box {
+    margin-top: 40px;
+    background: #F7FAFC;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #E2E8F0;
+}
+
+.sidebar-help-box h4 {
+    font-size: 14px;
+    color: #11142D;
+    margin-bottom: 8px;
+}
+
+.sidebar-help-box p {
+    font-size: 13px;
+    color: #718096;
+    line-height: 1.5;
+}
+
+/* --- RESPONSIVE PRODUCTS MATRIX --- */
+.products-matrix {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 30px;
+}
+
+.product-item-card {
+    background: #ffffff;
+    border-radius: 12px;
+    border: 1px solid #E5E9F0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.01);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.product-item-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.06);
+}
+
+.card-image-placeholder {
+    height: 140px;
+    background: #E8F5E9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #2E7D32;
+    font-weight: 700;
+    font-size: 14px;
+    text-transform: uppercase;
+}
+
+.card-details {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.card-details h3 {
+    font-size: 18px;
+    color: #11142D;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+.card-details p {
+    font-size: 14px;
+    color: #718096;
+    margin-bottom: 20px;
+    flex: 1;
+}
+
+.card-price-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 15px;
+    border-top: 1px dashed #E5E9F0;
+    padding-top: 12px;
+}
+
+.price-box .label {
+    display: block;
+    font-size: 11px;
+    text-transform: uppercase;
+    color: #A0AEC0;
+    font-weight: 600;
+}
+
+.price-box .price-val {
+    font-size: 22px;
+    font-weight: 700;
+    color: #1B5E20;
+    line-height: 1;
+}
+
+.unit-badge {
+    background: #EDF2F7;
+    color: #4A5568;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.btn-card {
+    display: block;
+    text-align: center;
+    background: #ffffff;
+    border: 1px solid #1B5E20;
+    color: #1B5E20;
+    padding: 10px;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.btn-card:hover {
+    background: #1B5E20;
+    color: #ffffff;
+}
+
+/* --- FOOTNOTE & FOOTER ACCENTS --- */
+.plant-about {
+    padding: 80px 15%;
+    background: #ffffff;
+    text-align: center;
+    border-top: 1px solid #E5E9F0;
+}
+
+.plant-about h2 {
+    font-size: 26px;
+    color: #11142D;
+    margin-bottom: 15px;
+}
+
+.shop-footer {
+    background: #11142D;
+    color: #A0AEC0;
+    text-align: center;
+    padding: 24px;
+    font-size: 13px;
+    border-top: 4px solid #1B5E20;
+}
+
+/* ==========================================================================
+   4. STEP 12C ORDER TRACKING LEDGER VISUALIZERS
+   ========================================================================== */
+.track-container {
+    max-width: 650px;
+    margin: 50px auto;
+    background: white;
+    padding: 35px;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,.05);
+    border: 1px solid #E5E9F0;
+}
+
+.track-container input {
+    width: 100%;
+    padding: 14px;
+    margin: 10px 0;
+    border: 1px solid #DDD;
+    border-radius: 8px;
+    background-color: #FAFAFA;
+    font-size: 15px;
+    outline: none;
+}
+
+.track-container input:focus {
+    border-color: #6B8E3B;
+    background-color: #ffffff;
+}
+
+.back-link {
+    display: inline-block;
+    margin-bottom: 20px;
+    text-decoration: none;
+    color: #6B8E3B;
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.order-card {
+    margin-top: 25px;
+    padding: 24px;
+    background: #FAFAFA;
+    border-radius: 12px;
+    border: 1px solid #E5E9F0;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-pending { background: #FFF3E0; color: #E65100; }
+.status-processing { background: #E1F5FE; color: #0288D1; }
+.status-completed { background: #E8F5E9; color: #2E7D32; }
+.status-cancelled { background: #FFEBEE; color: #C62828; }
+
+.timeline {
+    margin-top: 25px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.step {
+    padding: 14px;
+    border-left: 5px solid #E5E9F0;
+    background: white;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #7A869A;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.step i { font-size: 16px; color: #A0AEC0; }
+
+.step.done {
+    border-left-color: #2E7D32;
+    background: #F1F8E9;
+    color: #1B5E20;
+}
+.step.done i { color: #2E7D32; }
+
+.step.cancelled {
+    border-left-color: #C62828;
+    background: #FFEBEE;
+    color: #C62828;
+}
+.step.cancelled i { color: #C62828; }
+
+.error-box {
+    margin-top: 20px;
+    padding: 14px;
+    background: #FFEBEE;
+    color: #C62828;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    border-left: 4px solid #D32F2F;
+}

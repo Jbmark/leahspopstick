@@ -66,18 +66,17 @@ class ReportModel{
      * Compute total operational capital drain from expenses ledger
      * 🌟 REALIGNED: Changed 'expense_date' to match your explicit table schema column name 'created_at'
      */
+        // Total Expenses Tracker Sync
     public function getMonthlyExpenses(){
-
         $stmt=$this->pdo->query("
             SELECT IFNULL(SUM(amount),0)
             FROM expenses
-            WHERE MONTH(created_at)=MONTH(CURDATE())
-            AND YEAR(created_at)=YEAR(CURDATE())
+            WHERE MONTH(expense_date)=MONTH(CURDATE())
+            AND YEAR(expense_date)=YEAR(CURDATE())
         ");
-
         return $stmt->fetchColumn();
-
     }
+
 
     /**
      * Calculate absolute net yield profit/loss differentials metrics balance

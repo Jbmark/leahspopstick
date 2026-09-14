@@ -12,19 +12,8 @@
     <div class="card" style="max-width:600px;">
         <form method="POST">
             <div class="form-group">
-                <label>Expense Title / Reference</label>
-                <input type="text" name="title" required placeholder="e.g., Falcata Lumber Trucking Log">
-            </div>
-
-            <div class="form-group">
-                <label>Expenditure Category</label>
-                <select name="category" required style="width:100%; padding:12px; border:1px solid #E0E0E0; border-radius:8px; background:#FAFAFA;">
-                    <option>Raw Materials</option>
-                    <option>Logistics / Freight</option>
-                    <option>Utilities / Warehouse</option>
-                    <option>Equipment Maintenance</option>
-                    <option>Administrative Cost</option>
-                </select>
+                <label>Expense Name</label>
+                <input type="text" name="expense_name" required placeholder="e.g., Falcata Lumber Trucking Log">
             </div>
 
             <div class="form-group">
@@ -33,8 +22,13 @@
             </div>
 
             <div class="form-group">
+                <label>Date Logged</label>
+                <input type="date" name="expense_date" required value="<?= date('Y-m-d'); ?>">
+            </div>
+
+            <div class="form-group">
                 <label>Description / Audit Remarks</label>
-                <textarea name="remarks" style="width:100%; height:80px; padding:12px; border:1px solid #E0E0E0; border-radius:8px; background:#FAFAFA;" placeholder="Provide clarifying transaction context..."></textarea>
+                <textarea name="description" style="width:100%; height:80px; padding:12px; border:1px solid #E0E0E0; border-radius:8px; background:#FAFAFA;" placeholder="Provide clarifying transaction context..."></textarea>
             </div>
 
             <button type="submit" class="btn-login" style="margin-top:10px;">Commit Expense Item</button>

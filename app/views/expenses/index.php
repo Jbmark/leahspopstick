@@ -16,20 +16,18 @@
             <tr>
                 <th>Date Logged</th>
                 <th>Expense Reference</th>
-                <th>Category Cluster</th>
-                <th>Remarks Description</th>
+                <th>Description</th>
                 <th>Outlay Amount</th>
                 <th>Account Encoder</th>
             </tr>
             <?php if (empty($expenses)) { ?>
-                <tr><td colspan="6" style="text-align:center; color:#7A869A; padding:30px;">No operational outflows logged inside system tracking points.</td></tr>
+                <tr><td colspan="5" style="text-align:center; color:#7A869A; padding:30px;">No operational outflows logged inside system tracking points.</td></tr>
             <?php } else {
                 foreach($expenses as $e){ ?>
                 <tr>
-                    <td><?= date('M d, Y', strtotime($e['created_at'])); ?></td>
-                    <td><b><?= htmlspecialchars($e['title']); ?></b></td>
-                    <td><span class="role-tag" style="background:#ECEFF1; color:#37474F;"><?= htmlspecialchars($e['category']); ?></span></td>
-                    <td><small style="color:#555;"><?= htmlspecialchars($e['remarks'] ?: 'None.'); ?></small></td>
+                    <td><?= date('M d, Y', strtotime($e['expense_date'])); ?></td>
+                    <td><b><?= htmlspecialchars($e['expense_name']); ?></b></td>
+                    <td><small style="color:#555;"><?= htmlspecialchars($e['description'] ?: 'None.'); ?></small></td>
                     <td style="color:#C62828; font-weight:700;">₱<?= number_format($e['amount'], 2); ?></td>
                     <td><?= htmlspecialchars($e['full_name']); ?></td>
                 </tr>

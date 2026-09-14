@@ -10,13 +10,10 @@ class ExpenseController{
         $this->expenseModel = new ExpenseModel();
     }
 
-    /**
-     * RBAC Permission Guard boundary limit validation
-     */
     private function guard(){
         $role = $_SESSION['user']['role_name'] ?? '';
         if(!in_array($role, ['Owner', 'Bookkeeper'])){
-            die("Access Denied: Your assigned role profile parameters restrict expense ledger write tools.");
+            die("Access Denied.");
         }
     }
 
@@ -32,10 +29,10 @@ class ExpenseController{
         if($_SERVER['REQUEST_METHOD'] == "POST"){
             try {
                 $this->expenseModel->createExpense(
-                    $_POST['title'],
-                    $_POST['category'],
+                    $_POST['expense_name'],
+                    $_POST['description'],
                     $_POST['amount'],
-                    $_POST['remarks'],
+                    $_POST['expense_date'],
                     $_SESSION['user']['user_id'] ?? 1
                 );
                 header("Location: expenses.php");

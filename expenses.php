@@ -4,7 +4,7 @@ session_start();
 if (!isset($_SESSION['user'])) {
     header("Location: index.php");
     exit;
-}
+}  
 
 require_once 'app/controllers/ExpenseController.php';
 $controller = new ExpenseController();

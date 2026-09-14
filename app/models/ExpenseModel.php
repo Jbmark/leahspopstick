@@ -13,31 +13,31 @@ class ExpenseModel{
 
     /**
      * Fetch all logged expenditures joined with the target accounts encoder name
-     * 🌟 REALIGNED: Column handles map onto 'created_at', 'title', and 'created_by'
+     * 🌟 FIXED: Maps precisely to your active columns: expense_name, expense_date, and recorded_by
      */
     public function getAllExpenses(){
         return $this->pdo->query("
-            SELECT e.expense_id, e.title, e.amount, e.category, e.remarks, e.created_at, u.full_name
+            SELECT e.expense_id, e.expense_name, e.amount, e.description, e.expense_date, u.full_name
             FROM expenses e
-            LEFT JOIN users u ON e.created_by = u.user_id
-            ORDER BY e.created_at DESC
+            LEFT JOIN users u ON e.recorded_by = u.user_id
+            ORDER BY e.expense_date DESC
         ")->fetchAll(PDO::FETCH_ASSOC);
     }
 
     /**
      * Commit a fresh expenditure node item safely
      */
-    public function createExpense($title, $category, $amount, $remarks, $user_id){
+    public function createExpense($name, $description, $amount, $date, $user_id){
         $stmt = $this->pdo->prepare("
-            INSERT INTO expenses (title, category, amount, remarks, created_by, created_at)
-            VALUES (?, ?, ?, ?, ?, NOW())
+            INSERT INTO expenses (expense_name, description, amount, expense_date, recorded_by)
+            VALUES (?, ?, ?, ?, ?)
         ");
 
         return $stmt->execute([
-            $title,
-            $category,
+            $name,
+            $description,
             $amount,
-            $remarks,
+            $date,
             $user_id
         ]);
     }

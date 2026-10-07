@@ -4,38 +4,49 @@ require_once __DIR__.'/../models/ReportModel.php';
 
 class ExportController{
 
-    /**
-     * Compile and stream a downloadable Excel-ready spreadsheet ledger file
-     */
     public function salesCSV(){
 
-        // Security Checkpoint: Restrict export logs strictly to allowed accounting roles
+        // Only Owner and Bookkeeper can export reports
         $role = $_SESSION['user']['role_name'] ?? '';
+
         if ($role !== 'Owner' && $role !== 'Bookkeeper') {
-            die("Access Denied: Your assigned account profile restricts document export downloads.");
+            die("Access Denied.");
         }
 
         $model = new ReportModel();
-        $data = $model->getRecentTransactions();
 
-        // Establish core headers to trick the system browser into forcing binary data downloads
+        // Get all completed sales for the current month
+        $data = $model->getMonthlyCompletedOrders();
+
+        // Download as CSV file
         header('Content-Type: text/csv; charset=utf-8');
-        header('Content-Disposition: attachment; filename=leahs_popstick_sales_report_'.date('Y-m-d').'.csv');
 
-        // Open the live browser response output stream channel memory buffer
+        header(
+            'Content-Disposition: attachment; filename=leahs_popstick_sales_report_' .
+            date('Y-m-d') .
+            '.csv'
+        );
+
         $output = fopen("php://output", "w");
 
-        // Insert Excel Column Header Labels Matrix
-        fputcsv($output, ['Order ID', 'Customer Entity Profile Name', 'Fulfillment Date Completed', 'Total Amount Realized (₱)']);
+        // CSV column headers
+        fputcsv($output, [
+            'Order ID',
+            'Customer Name',
+            'Completion Date',
+            'Total Amount'
+        ]);
 
-        // Loop, clean fields array cells, and append file text rows
+        // Sales records
         foreach($data as $row){
+
             fputcsv($output, [
                 '#ORD-' . $row['order_id'],
-                $row['customer_name'], // Expanded variable field maps natively due to step 9A model enhancements
+                $row['customer_name'],
                 date('Y-m-d h:i A', strtotime($row['completed_at'])),
-                number_format($row['total_amount'], 2, '.', '') // Keep raw numeric values clean for Excel math formulas execution
+                number_format($row['total_amount'], 2, '.', '')
             ]);
+
         }
 
         fclose($output);

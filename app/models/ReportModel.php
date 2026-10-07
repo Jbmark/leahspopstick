@@ -136,5 +136,76 @@ class ReportModel{
         ];
     }
 
+    public function getInventorySummary()
+{
+    $stmt = $this->pdo->query("
+        SELECT
+            p.product_name,
+            p.unit,
+            p.reorder_level,
+            IFNULL(SUM(ib.quantity_remaining), 0) AS current_stock
+        FROM products p
+        LEFT JOIN inventory_batches ib
+            ON p.product_id = ib.product_id
+        WHERE p.status = 'Active'
+        GROUP BY
+            p.product_id,
+            p.product_name,
+            p.unit,
+            p.reorder_level
+        ORDER BY p.product_name ASC
+    ");
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+public function getDateRangeSummary($fromDate, $toDate)
+{
+    $salesStmt = $this->pdo->prepare("
+        SELECT IFNULL(SUM(total_amount), 0)
+        FROM orders
+        WHERE status = 'Completed'
+        AND DATE(completed_at) BETWEEN ? AND ?
+    ");
+
+    $salesStmt->execute([$fromDate, $toDate]);
+    $sales = $salesStmt->fetchColumn();
+
+    $expenseStmt = $this->pdo->prepare("
+        SELECT IFNULL(SUM(amount), 0)
+        FROM expenses
+        WHERE expense_date BETWEEN ? AND ?
+    ");
+
+    $expenseStmt->execute([$fromDate, $toDate]);
+    $expenses = $expenseStmt->fetchColumn();
+
+    return [
+        'sales' => $sales,
+        'expenses' => $expenses,
+        'profit' => $sales - $expenses
+    ];
+}
+
+public function getMonthlyCompletedOrders()
+{
+    $stmt = $this->pdo->query("
+        SELECT
+            o.order_id,
+            o.total_amount,
+            o.completed_at,
+            c.customer_name
+        FROM orders o
+        JOIN customers c
+            ON o.customer_id = c.customer_id
+        WHERE o.status = 'Completed'
+        AND MONTH(o.completed_at) = MONTH(CURDATE())
+        AND YEAR(o.completed_at) = YEAR(CURDATE())
+        ORDER BY o.completed_at DESC
+    ");
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
 
 }

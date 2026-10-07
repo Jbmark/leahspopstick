@@ -14,74 +14,160 @@ class InventoryController
     {
         global $pdo;
 
-        $this->pdo=$pdo;
-        $this->batchModel=new InventoryBatch();
-        $this->transactionModel=new InventoryTransaction();
+        $this->pdo = $pdo;
+        $this->batchModel = new InventoryBatch();
+        $this->transactionModel = new InventoryTransaction();
     }
 
     public function handleRequest()
     {
-        $action=$_GET['action'] ?? 'index';
+        $action = $_GET['action'] ?? 'index';
 
-        switch($action){
+        switch ($action) {
+
+            /*
+            |--------------------------------------------------------------------------
+            | ADD INVENTORY BATCH
+            |--------------------------------------------------------------------------
+            */
             case 'add_batch':
-                if($_SERVER['REQUEST_METHOD']=='POST'){
-                    $this->batchModel->addBatch(
-                        $_POST['product_id'],
-                        $_POST['batch_number'],
-                        $_POST['quantity'],
-                        $_POST['date_received']
-                    );
-                    
-                    $batch_id = $this->pdo->lastInsertId();
-                    $user_id = $_SESSION['user']['user_id'] ?? 1;
-                    
-                    $this->transactionModel->record(
-                        $_POST['product_id'],
-                        $batch_id,
-                        'Stock In',
-                        $_POST['quantity'],
-                        null,
-                        $user_id,
-                        'Initial batch entry'
-                    );
 
-                    header("Location: inventory.php");
-                    exit;
+                if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+
+                    try {
+
+                        $product_id = intval($_POST['product_id'] ?? 0);
+                        $batch_number = trim($_POST['batch_number'] ?? '');
+                        $quantity = (float)($_POST['quantity'] ?? 0);
+                        $date_received = $_POST['date_received'] ?? '';
+
+                        if ($product_id <= 0) {
+                            throw new Exception("Please select a product.");
+                        }
+
+                        if ($batch_number === '') {
+                            throw new Exception("Please enter a batch number.");
+                        }
+
+                        if ($quantity <= 0) {
+                            throw new Exception("Quantity must be greater than zero.");
+                        }
+
+                        if ($date_received === '') {
+                            throw new Exception("Please enter the date received.");
+                        }
+
+                        $this->batchModel->addBatch(
+                            $product_id,
+                            $batch_number,
+                            $quantity,
+                            $date_received
+                        );
+
+                        $batch_id = $this->pdo->lastInsertId();
+
+                        $user_id = $_SESSION['user']['user_id'] ?? 1;
+
+                        $this->transactionModel->record(
+                            $product_id,
+                            $batch_id,
+                            'Stock In',
+                            $quantity,
+                            null,
+                            $user_id,
+                            'Initial batch entry'
+                        );
+
+                        $_SESSION['success'] =
+                            "Inventory batch added successfully.";
+
+                        header("Location: inventory.php");
+                        exit;
+
+                    } catch (Exception $e) {
+
+                        $_SESSION['inventory_error'] =
+                            $e->getMessage();
+
+                        header("Location: inventory.php?action=add_batch");
+                        exit;
+                    }
                 }
 
-                $products = $this->pdo->query("SELECT * FROM products WHERE status='Active'")->fetchAll(PDO::FETCH_ASSOC);
+                $products = $this->pdo->query("
+                    SELECT *
+                    FROM products
+                    WHERE status = 'Active'
+                    ORDER BY product_name ASC
+                ")->fetchAll(PDO::FETCH_ASSOC);
+
                 include 'app/views/inventory/add_batch.php';
+
                 break;
 
+
+            /*
+            |--------------------------------------------------------------------------
+            | DEFAULT INVENTORY DASHBOARD
+            |--------------------------------------------------------------------------
+            */
             default:
+
                 $stocks = $this->batchModel->getCurrentStock();
+
                 $batches = $this->batchModel->getAllBatches();
+
                 include 'app/views/inventory/index.php';
         }
     }
 
-    public function deductFIFO($product_id,$qty,$order_id,$user_id)
-    {
-        $remaining=$qty;
 
-        $batches=$this->batchModel->getAvailableBatches($product_id);
+    /*
+    |--------------------------------------------------------------------------
+    | FIFO DEDUCTION
+    |--------------------------------------------------------------------------
+    |
+    | This method deducts inventory from the oldest available batches first.
+    |
+    */
+    public function deductFIFO(
+        $product_id,
+        $qty,
+        $order_id,
+        $user_id
+    ) {
+        $remaining = $qty;
 
-        foreach($batches as $batch)
-        {
-            if($remaining<=0)
+        $batches = $this->batchModel->getAvailableBatches($product_id);
+
+        foreach ($batches as $batch) {
+
+            if ($remaining <= 0) {
                 break;
+            }
 
-            $available=$batch['quantity_remaining'];
+            $available = (float)$batch['quantity_remaining'];
 
-            $deduct=min($remaining,$available);
+            $deduct = min($remaining, $available);
 
-            $stmt=$this->pdo->prepare("
-            UPDATE inventory_batches
-            SET quantity_remaining=quantity_remaining-?
-            WHERE batch_id=?");
+            $newRemaining = $available - $deduct;
 
-            $stmt->execute([$deduct,$batch['batch_id']]);
+            $stmt = $this->pdo->prepare("
+                UPDATE inventory_batches
+                SET
+                    quantity_remaining = ?,
+                    status = CASE
+                        WHEN ? <= 0 THEN 'Depleted'
+                        ELSE 'Available'
+                    END
+                WHERE batch_id = ?
+            ");
+
+            $stmt->execute([
+                $newRemaining,
+                $newRemaining,
+                $batch['batch_id']
+            ]);
 
             $this->transactionModel->record(
                 $product_id,
@@ -93,74 +179,147 @@ class InventoryController
                 'FIFO deduction'
             );
 
-            $remaining-=$deduct;
+            $remaining -= $deduct;
         }
 
-        if($remaining>0)
-        {
+        if ($remaining > 0) {
             throw new Exception("Not enough stock.");
         }
     }
 
-        /**
-     * Consume stock using FIFO (oldest batch first)
-     * Directly matches Chapter 3 algorithmic workflow specifications
-     */
+
+    /*
+    |--------------------------------------------------------------------------
+    | COMPLETE ORDER USING FIFO
+    |--------------------------------------------------------------------------
+    */
     public function consumeFIFO($order_id)
     {
         global $pdo;
 
         try {
+
             $pdo->beginTransaction();
 
-            // 1. Gather all line items registered within this order
+            /*
+             * Get all products and quantities
+             * belonging to the order.
+             */
             $stmt = $pdo->prepare("
-                SELECT product_id, quantity
+                SELECT
+                    product_id,
+                    quantity
                 FROM order_details
                 WHERE order_id = ?
             ");
-            $stmt->execute([$order_id]);
+
+            $stmt->execute([
+                $order_id
+            ]);
+
             $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-            foreach($items as $item){
-                $product_id = $item['product_id'];
-                $needed = $item['quantity'];
+            if (empty($items)) {
+                throw new Exception(
+                    "This order has no valid items."
+                );
+            }
 
-                // 2. Fetch oldest available inventory batch structures first
+            /*
+             * Process every product in the order.
+             */
+            foreach ($items as $item) {
+
+                $product_id = $item['product_id'];
+                $needed = (float)$item['quantity'];
+
+                /*
+                 * Get available batches from oldest
+                 * to newest.
+                 */
                 $batchStmt = $pdo->prepare("
                     SELECT *
                     FROM inventory_batches
                     WHERE product_id = ?
                     AND quantity_remaining > 0
-                    ORDER BY date_received ASC
+                    AND status = 'Available'
+                    ORDER BY date_received ASC, batch_id ASC
                 ");
-                $batchStmt->execute([$product_id]);
 
-                // 3. Chronological algorithm consumption loop
-                while($needed > 0){
+                $batchStmt->execute([
+                    $product_id
+                ]);
+
+                while ($needed > 0) {
+
                     $batch = $batchStmt->fetch(PDO::FETCH_ASSOC);
 
-                    if(!$batch){
-                        throw new Exception("Insufficient warehouse inventory for Product ID: " . $product_id);
+                    if (!$batch) {
+
+                        throw new Exception(
+                            "Insufficient warehouse inventory for Product ID: "
+                            . $product_id
+                        );
                     }
 
-                    $consume = min($needed, $batch['quantity_remaining']);
-                    $newRemaining = $batch['quantity_remaining'] - $consume;
+                    $available =
+                        (float)$batch['quantity_remaining'];
 
-                    // Update specific inventory batch node balances
+                    $consume = min(
+                        $needed,
+                        $available
+                    );
+
+                    $newRemaining =
+                        $available - $consume;
+
+                    /*
+                     * Deduct from the current FIFO batch
+                     * and update its status.
+                     */
                     $update = $pdo->prepare("
                         UPDATE inventory_batches
-                        SET quantity_remaining = ?
+                        SET
+                            quantity_remaining = ?,
+                            status = CASE
+                                WHEN ? <= 0 THEN 'Depleted'
+                                ELSE 'Available'
+                            END
                         WHERE batch_id = ?
                     ");
-                    $update->execute([$newRemaining, $batch['batch_id']]);
 
-                    // Inject chronological trace record directly into transactions log ledger
+                    $update->execute([
+                        $newRemaining,
+                        $newRemaining,
+                        $batch['batch_id']
+                    ]);
+
+                    /*
+                     * Record the Stock Out transaction.
+                     */
                     $log = $pdo->prepare("
                         INSERT INTO inventory_transactions
-                        (product_id, batch_id, transaction_type, quantity, reference_id, remarks, created_by)
-                        VALUES (?, ?, 'Stock Out', ?, ?, 'FIFO deduction after completed order', ?)
+                        (
+                            product_id,
+                            batch_id,
+                            transaction_type,
+                            quantity,
+                            reference_id,
+                            remarks,
+                            created_by
+                        )
+                        VALUES
+                        (
+                            ?,
+                            ?,
+                            'Stock Out',
+                            ?,
+                            ?,
+                            'FIFO deduction after completed order',
+                            ?
+                        )
                     ");
+
                     $log->execute([
                         $product_id,
                         $batch['batch_id'],
@@ -173,26 +332,45 @@ class InventoryController
                 }
             }
 
+            /*
+             * Everything succeeded.
+             */
             $pdo->commit();
+
             return true;
 
-        } catch(Exception $e){
-            $pdo->rollBack();
+        } catch (Exception $e) {
+
+            /*
+             * If anything fails, undo every inventory
+             * change made during this FIFO operation.
+             */
+            if ($pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
+
             throw $e;
         }
     }
 
-    /**
-     * Restore stock after cancelled order (Symmetrical Rollback Engine)
-     */
+
+    /*
+    |--------------------------------------------------------------------------
+    | RESTORE INVENTORY AFTER ORDER CANCELLATION
+    |--------------------------------------------------------------------------
+    */
     public function restoreOrderInventory($order_id)
     {
         global $pdo;
 
         try {
+
             $pdo->beginTransaction();
 
-            // 1. Fetch exact chronological logs generated during initial consumption execution
+            /*
+             * Find the original Stock Out transactions
+             * created for this order.
+             */
             $logs = $pdo->prepare("
                 SELECT *
                 FROM inventory_transactions
@@ -200,25 +378,61 @@ class InventoryController
                 AND transaction_type = 'Stock Out'
                 ORDER BY transaction_id DESC
             ");
-            $logs->execute([$order_id]);
 
-            // 2. Run symmetrical re-credit loops back into original batch records
-            while($row = $logs->fetch(PDO::FETCH_ASSOC)){
-                $pdo->prepare("
+            $logs->execute([
+                $order_id
+            ]);
+
+            $hasLogs = false;
+
+            while ($row = $logs->fetch(PDO::FETCH_ASSOC)) {
+
+                $hasLogs = true;
+
+                /*
+                 * Return the quantity to the original batch.
+                 */
+                $restore = $pdo->prepare("
                     UPDATE inventory_batches
-                    SET quantity_remaining = quantity_remaining + ?
+                    SET
+                        quantity_remaining =
+                            quantity_remaining + ?,
+                        status = 'Available'
                     WHERE batch_id = ?
-                ")->execute([
+                ");
+
+                $restore->execute([
                     $row['quantity'],
                     $row['batch_id']
                 ]);
 
-                // Create matching auditable reverse trail record entry
-                $pdo->prepare("
+                /*
+                 * Record the Return transaction.
+                 */
+                $returnLog = $pdo->prepare("
                     INSERT INTO inventory_transactions
-                    (product_id, batch_id, transaction_type, quantity, reference_id, remarks, created_by)
-                    VALUES (?, ?, 'Return', ?, ?, 'Inventory restored after order cancellation', ?)
-                ")->execute([
+                    (
+                        product_id,
+                        batch_id,
+                        transaction_type,
+                        quantity,
+                        reference_id,
+                        remarks,
+                        created_by
+                    )
+                    VALUES
+                    (
+                        ?,
+                        ?,
+                        'Return',
+                        ?,
+                        ?,
+                        'Inventory restored after order cancellation',
+                        ?
+                    )
+                ");
+
+                $returnLog->execute([
                     $row['product_id'],
                     $row['batch_id'],
                     $row['quantity'],
@@ -227,11 +441,26 @@ class InventoryController
                 ]);
             }
 
+            /*
+             * A completed order should normally have
+             * Stock Out records.
+             */
+            if (!$hasLogs) {
+                throw new Exception(
+                    "No FIFO inventory transactions were found for this completed order."
+                );
+            }
+
             $pdo->commit();
+
             return true;
 
-        } catch(Exception $e){
-            $pdo->rollBack();
+        } catch (Exception $e) {
+
+            if ($pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
+
             throw $e;
         }
     }

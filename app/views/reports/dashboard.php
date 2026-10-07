@@ -9,7 +9,64 @@
     <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
         <div>
             <h1>Financial Performance Dashboard</h1>
-            <p style="color: #7A869A; margin: 0;">Real-time calculation metrics panel optimized for auditing business health benchmarks.</p>
+            
+            <!-- DATE RANGE FILTER -->
+<div class="card" style="margin-top: 20px; padding: 20px; border-radius: 12px; background: #ffffff;">
+
+    <h3 style="font-size: 14px; color: #5A6A85; margin-bottom: 15px;">
+        Generate Report by Date Range
+    </h3>
+
+    <form method="GET" action="reports.php"
+          style="display: flex; gap: 15px; align-items: end; flex-wrap: wrap;">
+
+        <div>
+            <label style="display: block; font-size: 13px; margin-bottom: 6px;">
+                From Date
+            </label>
+
+            <input
+                type="date"
+                name="from_date"
+                value="<?= htmlspecialchars($fromDate); ?>"
+                required
+                style="padding: 9px 12px; border: 1px solid #D5DCE5; border-radius: 6px;"
+            >
+        </div>
+
+        <div>
+            <label style="display: block; font-size: 13px; margin-bottom: 6px;">
+                To Date
+            </label>
+
+            <input
+                type="date"
+                name="to_date"
+                value="<?= htmlspecialchars($toDate); ?>"
+                required
+                style="padding: 9px 12px; border: 1px solid #D5DCE5; border-radius: 6px;"
+            >
+        </div>
+
+        <button
+            type="submit"
+            class="btn"
+            style="background: #2E7D32; border: none; cursor: pointer;"
+        >
+            Generate Report
+        </button>
+
+        <a
+            href="reports.php"
+            class="btn"
+            style="background: #757575;"
+        >
+            Clear
+        </a>
+
+    </form>
+
+</div>
         </div>
         
         <!-- 🌟 STEP 10E CONNECTED: Exporting Action Panel Buttons Row -->
@@ -115,8 +172,152 @@
 
 </div>
 
+<!-- INVENTORY SUMMARY -->
+<div class="card" style="margin-top: 24px; padding: 24px; border-radius: 12px; background: #ffffff;">
+
+    <h3 style="font-size: 13px; color: #5A6A85; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 20px;">
+        Inventory Summary
+    </h3>
+
+    <table style="width: 100%; border-collapse: collapse;">
+
+        <thead>
+            <tr style="background: #F8F9FA;">
+                <th style="padding: 12px 16px; border-bottom: 1px solid #E5E9F0; text-align: left;">
+                    Product
+                </th>
+
+                <th style="padding: 12px 16px; border-bottom: 1px solid #E5E9F0; text-align: left;">
+                    Unit
+                </th>
+
+                <th style="padding: 12px 16px; border-bottom: 1px solid #E5E9F0; text-align: right;">
+                    Current Stock
+                </th>
+
+                <th style="padding: 12px 16px; border-bottom: 1px solid #E5E9F0; text-align: right;">
+                    Reorder Level
+                </th>
+
+                <th style="padding: 12px 16px; border-bottom: 1px solid #E5E9F0; text-align: center;">
+                    Status
+                </th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            <?php if (empty($inventory)) { ?>
+
+                <tr>
+                    <td colspan="5" style="text-align: center; padding: 30px; color: #7A869A;">
+                        No inventory records found.
+                    </td>
+                </tr>
+
+            <?php } else { ?>
+
+                <?php foreach ($inventory as $item) { ?>
+
+                    <?php
+                    $stock = (float)$item['current_stock'];
+                    $reorder = (float)$item['reorder_level'];
+
+                    $lowStock = $stock <= $reorder;
+                    ?>
+
+                    <tr>
+
+                        <td style="padding: 12px 16px; border-bottom: 1px solid #E5E9F0;">
+                            <?= htmlspecialchars($item['product_name']); ?>
+                        </td>
+
+                        <td style="padding: 12px 16px; border-bottom: 1px solid #E5E9F0;">
+                            <?= htmlspecialchars($item['unit']); ?>
+                        </td>
+
+                        <td style="padding: 12px 16px; border-bottom: 1px solid #E5E9F0; text-align: right;">
+                            <?= number_format($stock, 2); ?>
+                        </td>
+
+                        <td style="padding: 12px 16px; border-bottom: 1px solid #E5E9F0; text-align: right;">
+                            <?= number_format($reorder, 2); ?>
+                        </td>
+
+                        <td style="padding: 12px 16px; border-bottom: 1px solid #E5E9F0; text-align: center;">
+
+                            <?php if ($lowStock) { ?>
+
+                                <span style="color: #C62828; font-weight: 600;">
+                                    Low Stock
+                                </span>
+
+                            <?php } else { ?>
+
+                                <span style="color: #2E7D32; font-weight: 600;">
+                                    In Stock
+                                </span>
+
+                            <?php } ?>
+
+                        </td>
+
+                    </tr>
+
+                <?php } ?>
+
+            <?php } ?>
+
+        </tbody>
+
+    </table>
+
+</div>
+<?php if ($dateRange !== null) { ?>
+
+<div class="card" style="margin-bottom: 30px; padding: 24px; border-radius: 12px; background: #ffffff;">
+
+    <h3 style="font-size: 14px; color: #5A6A85; margin-bottom: 15px;">
+        Date Range Report
+    </h3>
+
+    <p style="color: #7A869A; margin-bottom: 20px;">
+        <?= htmlspecialchars($fromDate); ?>
+        to
+        <?= htmlspecialchars($toDate); ?>
+    </p>
+
+    <div class="cards">
+
+        <div class="card">
+            <h3>Sales</h3>
+            <p>
+                ₱<?= number_format($dateRange['sales'], 2); ?>
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>Expenses</h3>
+            <p>
+                ₱<?= number_format($dateRange['expenses'], 2); ?>
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>Profit / Loss</h3>
+            <p style="color: <?= $dateRange['profit'] >= 0 ? '#1B5E20' : '#D32F2F'; ?>;">
+                ₱<?= number_format($dateRange['profit'], 2); ?>
+            </p>
+        </div>
+
+    </div>
+
+</div>
+
+<?php } ?>
+
 <!-- ChartJS Script Canvas Wiring Engine -->
-<script src="https://jsdelivr.net"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 document.addEventListener("DOMContentLoaded", function() {
     const ctx = document.getElementById("salesChart").getContext("2d");

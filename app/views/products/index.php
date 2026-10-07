@@ -22,7 +22,25 @@
                     <td><?= $p['product_id']; ?></td>
                     <td><b><?= $p['product_name']; ?></b><br><small style="color:#777;"><?= $p['description']; ?></small></td>
                     <td>₱<?= number_format($p['selling_price'],2); ?></td>
-                    <td><span class="role-tag" style="background:#ECEFF1; color:#455A64;">0 <?= $p['unit']; ?></span></td>
+                    <td>
+    <?php
+    $stock = (float)$p['current_stock'];
+    $reorder = (float)$p['reorder_level'];
+    ?>
+
+    <span class="role-tag"
+          style="background:<?= $stock <= $reorder ? '#FFEBEE' : '#ECEFF1'; ?>;
+                 color:<?= $stock <= $reorder ? '#C62828' : '#455A64'; ?>;">
+        <?= number_format($stock, 2); ?> <?= htmlspecialchars($p['unit']); ?>
+    </span>
+
+    <?php if ($stock <= $reorder) { ?>
+        <br>
+        <small style="color:#C62828; font-weight:600;">
+            Low Stock
+        </small>
+    <?php } ?>
+</td>
                     <td>
                         <span class="role-tag" style="background: <?= $p['status'] == 'Active' ? '#E8F5E9; color:#2E7D32;' : '#FFEBEE; color:#C62828;' ?>">
                             <?= $p['status']; ?>

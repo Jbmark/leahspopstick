@@ -9,16 +9,63 @@ class InventoryTransaction
     public function __construct()
     {
         global $pdo;
-        $this->pdo=$pdo;
+        $this->pdo = $pdo;
     }
 
-    public function record($product,$batch,$type,$qty,$reference,$user,$remarks='')
-    {
-        $sql="INSERT INTO inventory_transactions
-        (product_id,batch_id,transaction_type,quantity,reference_id,created_by,remarks)
-        VALUES(?,?,?,?,?,?,?)";
+    /**
+     * Record an inventory transaction.
+     *
+     * Transaction types:
+     * Stock In
+     * Stock Out
+     * Adjustment
+     * Return
+     */
+    public function record(
+        $product,
+        $batch,
+        $type,
+        $qty,
+        $reference,
+        $user,
+        $remarks = ''
+    ) {
+        $allowedTypes = [
+            'Stock In',
+            'Stock Out',
+            'Adjustment',
+            'Return'
+        ];
 
-        $stmt=$this->pdo->prepare($sql);
+        $qty = (float)$qty;
+
+        if ($qty <= 0) {
+            throw new Exception(
+                "Inventory transaction quantity must be greater than zero."
+            );
+        }
+
+        if (!in_array($type, $allowedTypes)) {
+            throw new Exception(
+                "Invalid inventory transaction type."
+            );
+        }
+
+        $sql = "
+            INSERT INTO inventory_transactions
+            (
+                product_id,
+                batch_id,
+                transaction_type,
+                quantity,
+                reference_id,
+                created_by,
+                remarks
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        ";
+
+        $stmt = $this->pdo->prepare($sql);
 
         return $stmt->execute([
             $product,

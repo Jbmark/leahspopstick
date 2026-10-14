@@ -221,26 +221,43 @@ class OrderModel
                 /*
                  * Get the active product and current selling price.
                  */
+               
                 $pStmt = $this->pdo->prepare("
                     SELECT
-                        selling_price
-                    FROM products
-                    WHERE product_id = ?
-                    AND status = 'Active'
+                        p.selling_price,
+                        (
+                            SELECT COALESCE(SUM(ib.quantity_remaining), 0)
+                            FROM inventory_batches ib
+                            WHERE ib.product_id = p.product_id
+                              AND ib.status = 'Available'
+                        ) AS current_stock
+                    FROM products p
+                    WHERE p.product_id = ?
+                      AND p.status = 'Active'
                 ");
 
-                $pStmt->execute([
-                    $product_id
-                ]);
+                $pStmt->execute([$product_id]);
 
-                $unit_price = $pStmt->fetchColumn();
+                $product = $pStmt->fetch(PDO::FETCH_ASSOC);
 
-                if ($unit_price === false) {
-
+                if (!$product) {
                     throw new Exception(
                         "Selected product does not exist or is inactive."
                     );
                 }
+
+                $unit_price = (float) $product['selling_price'];
+                $current_stock = (float) $product['current_stock'];
+
+                if ($qty > $current_stock) {
+                    throw new Exception(
+                        "Insufficient stock for " .
+                        "Product ID: " . $product_id .
+                        ". Available: " . $current_stock .
+                        ", requested: " . $qty . "."
+                    );
+                }
+
 
                 $subtotal = $qty * (float)$unit_price;
 

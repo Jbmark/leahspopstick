@@ -1,18 +1,27 @@
+
 <?php
 
 require_once '../../config/database.php';
 
-// Fetch active products from the database
+// Fetch active products and calculate available stock
 $stmt = $pdo->query("
-    SELECT *
-    FROM products
-    WHERE status = 'Active'
-    ORDER BY product_name ASC
+    SELECT
+        p.*,
+        (
+            SELECT COALESCE(SUM(ib.quantity_remaining), 0)
+            FROM inventory_batches ib
+            WHERE ib.product_id = p.product_id
+              AND ib.status = 'Available'
+        ) AS current_stock
+    FROM products p
+    WHERE p.status = 'Active'
+    ORDER BY p.product_name ASC
 ");
 
 $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 ?>
+
 
 <!DOCTYPE html>
 
@@ -281,16 +290,26 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
                 <div class="product-item-card">
 
-                    <div class="card-image-placeholder">
+                    
+                <div class="card-image-placeholder">
+                    <?php if (!empty($p['image'])) { ?>
+                        <img
+                            src="<?= htmlspecialchars($p['image']); ?>"
+                            alt="<?= htmlspecialchars($p['product_name']); ?>"
+                        >
+                    <?php } else { ?>
+                        <span>🪵 Wooden Product</span>
+                    <?php } ?>
+                </div>
 
-                        <span>
-                            🪵 Wooden Product
-                        </span>
-
-                    </div>
 
 
                     <div class="card-details">
+                        <?php if (!empty($p['category'])) { ?>
+    <span class="product-category">
+        <?= htmlspecialchars($p['category']); ?>
+    </span>
+<?php } ?>
 
                         <h3>
                             <?= htmlspecialchars(
@@ -333,16 +352,27 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 ); ?>
 
                             </span>
+                        </div>
 
+                        <div class="stock-info">
+                            <span class="stock-label">Available Stock</span>
+
+                            <span class="stock-value">
+                                   <?= number_format((float) $p['current_stock'], 0); ?>
+
+                                <?= htmlspecialchars($p['unit']); ?>
+                             </span>
                         </div>
 
 
-                        <a
-                            href="order.php"
-                            class="btn-card"
-                        >
-                            Order This Product
-                        </a>
+                        
+                    <a
+                        href="order.php?product_id=<?= (int) $p['product_id']; ?>"
+                        class="btn-card"
+                    >
+                        Order This Product
+                    </a>
+
 
                     </div>
 

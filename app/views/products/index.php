@@ -20,7 +20,13 @@
                 <?php foreach($products as $p){ ?>
                 <tr>
                     <td><?= $p['product_id']; ?></td>
-                    <td><b><?= $p['product_name']; ?></b><br><small style="color:#777;"><?= $p['description']; ?></small></td>
+                   <td>
+    <b><?= htmlspecialchars($p['product_name']); ?></b>
+    <br>
+    <small style="color:#777;">
+        <?= htmlspecialchars($p['description'] ?? ''); ?>
+    </small>
+</td>
                     <td>₱<?= number_format($p['selling_price'],2); ?></td>
                     <td>
     <?php
@@ -31,7 +37,7 @@
     <span class="role-tag"
           style="background:<?= $stock <= $reorder ? '#FFEBEE' : '#ECEFF1'; ?>;
                  color:<?= $stock <= $reorder ? '#C62828' : '#455A64'; ?>;">
-        <?= number_format($stock, 2); ?> <?= htmlspecialchars($p['unit']); ?>
+        <?= number_format($stock, 0); ?> <?= htmlspecialchars($p['unit']); ?>
     </span>
 
     <?php if ($stock <= $reorder) { ?>

@@ -9,10 +9,16 @@ $orderModel = new OrderModel();
 
 // Fetch active products
 $products = $pdo->query("
-    SELECT *
-    FROM products
-    WHERE status = 'Active'
-    ORDER BY product_name ASC
+    SELECT p.*,
+        (
+            SELECT COALESCE(SUM(ib.quantity_remaining), 0)
+            FROM inventory_batches ib
+            WHERE ib.product_id = p.product_id
+              AND ib.status = 'Available'
+        ) AS current_stock
+    FROM products p
+    WHERE p.status = 'Active'
+    ORDER BY p.product_name ASC
 ")->fetchAll(PDO::FETCH_ASSOC);
 
 $error_message = "";
@@ -24,8 +30,11 @@ $email = trim($_POST['email'] ?? '');
 $delivery_address = trim($_POST['delivery_address'] ?? '');
 $remarks = trim($_POST['remarks'] ?? '');
 
+
 $product_ids = $_POST['product_id'] ?? [];
 $quantities = $_POST['quantity'] ?? [];
+
+$selected_product_id = (int) ($_GET['product_id'] ?? 0);
 
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -554,28 +563,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                             <?php foreach ($products as $p) { ?>
 
-                                <option
-                                    value="<?= $p['product_id']; ?>"
-                                    <?= (
-                                        isset($product_ids[$loop]) &&
-                                        $product_ids[$loop] == $p['product_id']
-                                    ) ? 'selected' : ''; ?>
-                                >
+                                
+                            <option value="<?= (int) $p['product_id']; ?>"
+                                <?= (
+                                    (isset($product_ids[$loop]) && (int) $product_ids[$loop] === (int) $p['product_id'])
+                                    || ($loop === 0 && $selected_product_id === (int) $p['product_id'])
+                                ) ? 'selected' : ''; ?>>
 
-                                    <?= htmlspecialchars(
-                                        $p['product_name']
-                                    ); ?>
 
-                                    -
-                                    ₱<?= number_format(
-                                        $p['selling_price'],
-                                        2
-                                    ); ?>
-
-                                    per
-                                    <?= htmlspecialchars(
-                                        $p['unit']
-                                    ); ?>
+                                    
+                                <?= htmlspecialchars($p['product_name']); ?>
+                                - ₱<?= number_format($p['selling_price'], 2); ?>
+                                per <?= htmlspecialchars($p['unit']); ?>
+                                (Available: <?= number_format((float) $p['current_stock'], 0); ?>)
 
                                 </option>
 

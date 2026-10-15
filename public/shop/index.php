@@ -1,10 +1,23 @@
-
 <?php
 
 require_once '../../config/database.php';
 
+// Get the selected category from the URL
+$category = $_GET['category'] ?? '';
+
+// Allow only valid categories
+$allowedCategories = [
+    'Wooden Utensils',
+    'Wooden Sticks',
+    'Food Accessories'
+];
+
+if (!in_array($category, $allowedCategories, true)) {
+    $category = '';
+}
+
 // Fetch active products and calculate available stock
-$stmt = $pdo->query("
+$sql = "
     SELECT
         p.*,
         (
@@ -15,8 +28,20 @@ $stmt = $pdo->query("
         ) AS current_stock
     FROM products p
     WHERE p.status = 'Active'
-    ORDER BY p.product_name ASC
-");
+";
+
+$params = [];
+
+// Filter by category if one is selected
+if ($category !== '') {
+    $sql .= " AND p.category = ?";
+    $params[] = $category;
+}
+
+$sql .= " ORDER BY p.product_name ASC";
+
+$stmt = $pdo->prepare($sql);
+$stmt->execute($params);
 
 $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -190,10 +215,13 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 >
 
 
+
 <div class="section-title">
 
     <h2>
-        Our Products
+        <?= $category !== ''
+            ? htmlspecialchars($category, ENT_QUOTES, 'UTF-8')
+            : 'Our Products'; ?>
     </h2>
 
     <p>
@@ -201,7 +229,13 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
         and submit an order request.
     </p>
 
+    <p>
+        Showing <?= count($products); ?>
+        product<?= count($products) === 1 ? '' : 's'; ?>
+    </p>
+
 </div>
+
 
 
 <div class="catalog-container">
@@ -209,56 +243,51 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     <!-- PRODUCT INFORMATION SIDEBAR -->
 
-    <aside class="categories-sidebar">
+    
+<aside class="categories-sidebar">
 
-        <h3>
-            Product Categories
-        </h3>
+    <h3>Product Categories</h3>
 
-        <ul>
+    <ul>
+        <li class="<?= $category === '' ? 'active' : ''; ?>">
+            <a href="index.php#catalog">
+                All Products
+            </a>
+        </li>
 
-            <li class="active">
-                <a href="#catalog">
-                    All Products
-                </a>
-            </li>
+        <li class="<?= $category === 'Wooden Utensils' ? 'active' : ''; ?>">
+            <a href="index.php?category=<?= urlencode('Wooden Utensils'); ?>#catalog">
+                Wooden Utensils
+            </a>
+        </li>
 
-            <li>
-                <a href="#catalog">
-                    Wooden Utensils
-                </a>
-            </li>
+        <li class="<?= $category === 'Wooden Sticks' ? 'active' : ''; ?>">
+            <a href="index.php?category=<?= urlencode('Wooden Sticks'); ?>#catalog">
+                Wooden Sticks
+            </a>
+        </li>
 
-            <li>
-                <a href="#catalog">
-                    Wooden Sticks
-                </a>
-            </li>
+        <li class="<?= $category === 'Food Accessories' ? 'active' : ''; ?>">
+            <a href="index.php?category=<?= urlencode('Food Accessories'); ?>#catalog">
+                Food Accessories
+            </a>
+        </li>
+    </ul>
 
-            <li>
-                <a href="#catalog">
-                    Food Accessories
-                </a>
-            </li>
+    <div class="sidebar-help-box">
 
-        </ul>
+        <h4>Need Help?</h4>
 
+        <p>
+            For bulk orders or product inquiries,
+            submit an order request and provide
+            your details.
+        </p>
 
-        <div class="sidebar-help-box">
+    </div>
 
-            <h4>
-                Need Help?
-            </h4>
+</aside>
 
-            <p>
-                For bulk orders or product inquiries,
-                submit an order request and provide
-                your details.
-            </p>
-
-        </div>
-
-    </aside>
 
 
     <!-- PRODUCT GRID -->
@@ -276,9 +305,10 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     </h3>
 
                     <p>
-                        There are currently no active
-                        products available.
-                    </p>
+    <?= $category !== ''
+        ? 'There are currently no products in this category.'
+        : 'There are currently no active products available.'; ?>
+</p>
 
                 </div>
 
@@ -290,17 +320,20 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
                 <div class="product-item-card">
 
-                    
-                <div class="card-image-placeholder">
-                    <?php if (!empty($p['image'])) { ?>
-                        <img
-                            src="<?= htmlspecialchars($p['image']); ?>"
-                            alt="<?= htmlspecialchars($p['product_name']); ?>"
-                        >
-                    <?php } else { ?>
-                        <span>🪵 Wooden Product</span>
-                    <?php } ?>
-                </div>
+           
+
+
+<div class="card-image-placeholder">
+    <?php if (!empty($p['image'])) { ?>
+        <img
+            src="/leahs-popstick/public/<?= htmlspecialchars($p['image'], ENT_QUOTES, 'UTF-8'); ?>"
+            alt="<?= htmlspecialchars($p['product_name'], ENT_QUOTES, 'UTF-8'); ?>"
+        >
+    <?php } else { ?>
+        <span>🪵 Wooden Product</span>
+    <?php } ?>
+</div>
+
 
 
 

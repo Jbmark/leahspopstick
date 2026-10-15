@@ -8,23 +8,40 @@ class Product
     {
         $this->pdo = $pdo;
     }
+///////////////////////////////////////
+    
+public function getAll($category = '')
+{
+    $sql = "
+        SELECT p.*,
+            COALESCE(SUM(ib.quantity_remaining), 0) AS current_stock
+        FROM products p
+        LEFT JOIN inventory_batches ib
+            ON p.product_id = ib.product_id
+            AND ib.status = 'Available'
+    ";
 
-    public function getAll()
-    {
-        $stmt = $this->pdo->query("
-            SELECT p.*,
-                COALESCE(SUM(ib.quantity_remaining), 0) AS current_stock
-            FROM products p
-            LEFT JOIN inventory_batches ib
-                ON p.product_id = ib.product_id
-                AND ib.status = 'Available'
-            GROUP BY p.product_id
-            ORDER BY p.product_name
-        ");
-
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    if ($category !== '') {
+        $sql .= " WHERE p.category = ?";
     }
 
+    $sql .= "
+        GROUP BY p.product_id
+        ORDER BY p.product_name
+    ";
+
+    $stmt = $this->pdo->prepare($sql);
+
+    if ($category !== '') {
+        $stmt->execute([$category]);
+    } else {
+        $stmt->execute();
+    }
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+//////////////////////////////////////////////
     public function create($data)
     {
         $stmt = $this->pdo->prepare("

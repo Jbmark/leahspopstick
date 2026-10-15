@@ -2,10 +2,56 @@
 <div class="container">
     <?php include 'app/views/layouts/sidebar.php'; ?>
     <div class="content">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h1>Products Inventory</h1>
-            <a href="products.php?action=create" class="btn">+ Add Product</a>
-        </div>
+
+        
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <h1>Products Inventory</h1>
+    <a href="products.php?action=create" class="btn">+ Add Product</a>
+</div>
+
+<form method="GET" action="products.php"
+      style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
+
+    <input type="hidden" name="action" value="index">
+
+    <label for="category">Filter by Category:</label>
+
+    <select name="category" id="category"
+            onchange="this.form.submit()"
+            style="padding: 10px; border: 1px solid #ccc; border-radius: 6px;">
+
+        <option value=""
+            <?= empty($category) ? 'selected' : ''; ?>>
+            All Categories
+        </option>
+
+        <option value="Wooden Utensils"
+            <?= $category === 'Wooden Utensils' ? 'selected' : ''; ?>>
+            Wooden Utensils
+        </option>
+
+        <option value="Wooden Sticks"
+            <?= $category === 'Wooden Sticks' ? 'selected' : ''; ?>>
+            Wooden Sticks
+        </option>
+
+        <option value="Food Accessories"
+            <?= $category === 'Food Accessories' ? 'selected' : ''; ?>>
+            Food Accessories
+        </option>
+
+        <option value="Uncategorized"
+            <?= $category === 'Uncategorized' ? 'selected' : ''; ?>>
+            Uncategorized
+        </option>
+    </select>
+
+    <noscript>
+        <button type="submit" class="btn">Filter</button>
+    </noscript>
+
+</form>
+
         
         <div class="card" style="padding: 0; overflow: hidden;">
             <table>

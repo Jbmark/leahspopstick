@@ -1,0 +1,28 @@
+Destination: C:\xampp\htdocs\leahs-popstick\app\controllers/public/shop/images/8dbab82f6f29d68bb3bbf6e469b40064.webp
+Move succeeded. File exists: YES
+Destination: C:\xampp\htdocs\leahs-popstick\app\controllers/public/shop/images/dd20dca7155fb28d6a11de42cb77a59f.webp
+Move succeeded. File exists: YES
+2026-10-15 07:11:01
+Destination: C:\xampp\htdocs\leahs-popstick/public/shop/images/1e184938383525a3eba814c478c2679f.webp
+Folder exists: YES
+Folder writable: YES
+Temporary file: C:\xampp\tmp\phpBB92.tmp
+Temporary file exists: YES
+2026-10-15 07:12:08
+Destination: C:\xampp\htdocs\leahs-popstick/public/shop/images/336ccebb0a3efc00881806196dac37c6.webp
+Folder exists: YES
+Folder writable: YES
+Temporary file: C:\xampp\tmp\phpC207.tmp
+Temporary file exists: YES
+2026-10-15 12:28:55
+Destination: C:\xampp\htdocs\leahs-popstick/public/shop/images/70414bd896170c0ab8144a9e02ebcdc7.webp
+Folder exists: YES
+Folder writable: YES
+Temporary file: C:\xampp\tmp\phpC3E2.tmp
+Temporary file exists: YES
+2026-10-15 12:30:19
+Destination: C:\xampp\htdocs\leahs-popstick/public/shop/images/5a30309a64e5ab6314e39e65b57d10c5.jpg
+Folder exists: YES
+Folder writable: YES
+Temporary file: C:\xampp\tmp\php101A.tmp
+Temporary file exists: YES

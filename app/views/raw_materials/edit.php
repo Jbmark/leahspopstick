@@ -168,13 +168,13 @@
                     type="text"
                     id="current_quantity"
                     value="<?= htmlspecialchars(
-                        $rawMaterial['quantity']
-                    ); ?>
-                    <?= htmlspecialchars(
-                        $rawMaterial['unit']
+                        rtrim(
+                            rtrim(number_format((float) $rawMaterial['quantity'], 2, '.', ''), '0'),
+                            '.'
+                        )
                     ); ?>"
                     readonly
-                    style="
+                       style="
                         width:100%;
                         padding:12px;
                         border:1px solid #D5D9E0;

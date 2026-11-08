@@ -209,14 +209,6 @@ class OrderController
                      */
                     $this->inventoryController->consumeFIFO($id);
 
-                    /*
-                     * Only mark the order Completed
-                     * after successful FIFO deduction.
-                     */
-                    $this->orderModel->updateStatus(
-                        $id,
-                        'Completed'
-                    );
 
                     $_SESSION['success'] =
                         "Order completed successfully and inventory has been deducted using FIFO.";
@@ -231,84 +223,49 @@ class OrderController
                 exit;
 
 
-            /*
-            |--------------------------------------------------------------------------
-            | CANCEL ORDER
-            |--------------------------------------------------------------------------
-            | Allowed:
-            | Pending -> Cancelled
-            | Processing -> Cancelled
-            | Completed -> Cancelled + restore inventory
-            |
-            | Cancelled -> no action
-            |--------------------------------------------------------------------------
-            */
-            case 'cancel':
+case 'cancel':
 
-                $this->checkPermission(['Owner', 'Office Staff']);
+    $this->checkPermission(['Owner', 'Office Staff']);
 
-                $id = intval($_GET['id']);
+    $id = isset($_GET['id'])
+        ? (int) $_GET['id']
+        : 0;
 
-                $order = $this->orderModel->getOrderById($id);
+    if ($id <= 0) {
+        $_SESSION['order_error'] = "Invalid order ID.";
+        header("Location: orders.php");
+        exit;
+    }
 
-                if (!$order) {
-                    die("Order not found.");
-                }
+    try {
 
-                /*
-                 * Prevent cancelling an already cancelled order.
-                 */
-                if ($order['status'] === 'Cancelled') {
+        /*
+         * This method now handles both inventory restoration
+         * and the order status update in one transaction.
+         */
+        $originalStatus =
+            $this->inventoryController
+                ->cancelOrderAndRestoreInventory($id);
 
-                    $_SESSION['order_error'] =
-                        "This order has already been cancelled.";
+        if ($originalStatus === 'Completed') {
 
-                    header("Location: orders.php?action=view&id=" . $id);
-                    exit;
-                }
+            $_SESSION['success'] =
+                "Order cancelled successfully. "
+                . "FIFO inventory has been restored.";
 
-                try {
+        } else {
 
-                    /*
-                     * Only Completed orders have already
-                     * deducted inventory, so only those
-                     * need inventory restoration.
-                     */
-                    if ($order['status'] === 'Completed') {
+            $_SESSION['success'] =
+                "Order cancelled successfully.";
+        }
 
-                        $this->inventoryController
-                             ->restoreOrderInventory($id);
-                    }
+    } catch (Exception $e) {
 
-                    /*
-                     * Pending and Processing orders
-                     * have not deducted inventory yet.
-                     */
-                    $this->orderModel->updateStatus(
-                        $id,
-                        'Cancelled'
-                    );
+        $_SESSION['order_error'] = $e->getMessage();
+    }
 
-                    if ($order['status'] === 'Completed') {
-
-                        $_SESSION['success'] =
-                            "Order cancelled successfully and FIFO-deducted inventory has been restored.";
-
-                    } else {
-
-                        $_SESSION['success'] =
-                            "Order cancelled successfully.";
-                    }
-
-                } catch (Exception $e) {
-
-                    $_SESSION['order_error'] =
-                        "Cancellation Rollback Error: " . $e->getMessage();
-                }
-
-                header("Location: orders.php?action=view&id=" . $id);
-                exit;
-
+    header("Location: orders.php?action=view&id=" . $id);
+    exit;
 
             /*
             |--------------------------------------------------------------------------

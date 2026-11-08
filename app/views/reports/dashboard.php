@@ -6,75 +6,145 @@
 
 <div class="content">
 
-    <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
-        <div>
-            <h1>Financial Performance Dashboard</h1>
-            
-            <!-- DATE RANGE FILTER -->
-<div class="card" style="margin-top: 20px; padding: 20px; border-radius: 12px; background: #ffffff;">
+    
+<div class="reports-tools-row">
 
-    <h3 style="font-size: 14px; color: #5A6A85; margin-bottom: 15px;">
-        Generate Report by Date Range
-    </h3>
+    <div class="reports-tools-main">
+        <h1>Financial Performance Dashboard</h1>
 
-    <form method="GET" action="reports.php"
-          style="display: flex; gap: 15px; align-items: end; flex-wrap: wrap;">
 
-        <div>
-            <label style="display: block; font-size: 13px; margin-bottom: 6px;">
-                From Date
-            </label>
+        <!-- REPORT PERIOD FILTER -->
+        <div class="card" style="margin-top: 20px; padding: 20px; border-radius: 12px; background: #ffffff;">
 
-            <input
-                type="date"
-                name="from_date"
-                value="<?= htmlspecialchars($fromDate); ?>"
-                required
-                style="padding: 9px 12px; border: 1px solid #D5DCE5; border-radius: 6px;"
-            >
+            <h3 style="font-size: 14px; color: #5A6A85; margin-bottom: 15px;">
+                Generate Financial Report
+            </h3>
+
+            <form method="GET" action="reports.php"
+                  style="display: flex; gap: 15px; align-items: end; flex-wrap: wrap;">
+
+                <div style="min-width: 180px;">
+                    <label for="period" style="display: block; font-size: 13px; margin-bottom: 6px;">
+                        Report Period
+                    </label>
+
+                    <select id="period" name="period"
+                            onchange="toggleCustomDates()"
+                            style="padding: 9px 12px; border: 1px solid #D5DCE5; border-radius: 6px; width: 100%;">
+
+                        <option value="daily" <?= $period === 'daily' ? 'selected' : ''; ?>>Daily</option>
+                        <option value="weekly" <?= $period === 'weekly' ? 'selected' : ''; ?>>Weekly</option>
+                        <option value="monthly" <?= $period === 'monthly' ? 'selected' : ''; ?>>Monthly</option>
+                        <option value="yearly" <?= $period === 'yearly' ? 'selected' : ''; ?>>Yearly</option>
+                        <option value="custom" <?= $period === 'custom' ? 'selected' : ''; ?>>Custom Date Range</option>
+
+                    </select>
+                </div>
+
+                <div id="customDateFields"
+                     style="display: <?= $period === 'custom' ? 'flex' : 'none'; ?>; gap: 15px; flex-wrap: wrap;">
+
+                    <div>
+                        <label for="from_date" style="display: block; font-size: 13px; margin-bottom: 6px;">
+                            From Date
+                        </label>
+
+                        <input type="date"
+                               id="from_date"
+                               name="from_date"
+                               value="<?= htmlspecialchars($fromDate ?? '', ENT_QUOTES, 'UTF-8'); ?>"
+                               <?= $period === 'custom' ? 'required' : ''; ?>
+                               style="padding: 9px 12px; border: 1px solid #D5DCE5; border-radius: 6px;">
+                    </div>
+
+                    <div>
+                        <label for="to_date" style="display: block; font-size: 13px; margin-bottom: 6px;">
+                            To Date
+                        </label>
+
+                        <input type="date"
+                               id="to_date"
+                               name="to_date"
+                               value="<?= htmlspecialchars($toDate ?? '', ENT_QUOTES, 'UTF-8'); ?>"
+                               <?= $period === 'custom' ? 'required' : ''; ?>
+                               style="padding: 9px 12px; border: 1px solid #D5DCE5; border-radius: 6px;">
+                    </div>
+
+                </div>
+
+                <button type="submit" class="btn"
+                        style="background: #2E7D32; border: none; cursor: pointer;">
+                    Generate Report
+                </button>
+
+                <a href="reports.php?clear=1" class="btn"
+                   style="background: #757575;">
+                    Clear
+                </a>
+
+            </form>
+
+            <?php if (!empty($dateError)) { ?>
+                <p style="color: #c62828; margin-top: 12px;">
+                    <?= htmlspecialchars($dateError, ENT_QUOTES, 'UTF-8'); ?>
+                </p>
+            <?php } ?>
+
         </div>
 
-        <div>
-            <label style="display: block; font-size: 13px; margin-bottom: 6px;">
-                To Date
-            </label>
+        <!-- SELECTED PERIOD FINANCIAL REPORT -->
+        <?php if ($dateRange !== null) { ?>
 
-            <input
-                type="date"
-                name="to_date"
-                value="<?= htmlspecialchars($toDate); ?>"
-                required
-                style="padding: 9px 12px; border: 1px solid #D5DCE5; border-radius: 6px;"
-            >
-        </div>
+            <div class="card" style="margin-top: 20px; margin-bottom: 30px; padding: 24px; border-radius: 12px; background: #ffffff;">
 
-        <button
-            type="submit"
-            class="btn"
-            style="background: #2E7D32; border: none; cursor: pointer;"
-        >
-            Generate Report
-        </button>
+                <h3 style="font-size: 14px; color: #5A6A85; margin-bottom: 15px;">
+                    <?= htmlspecialchars($periodLabel, ENT_QUOTES, 'UTF-8'); ?> Financial Report
+                </h3>
 
-        <a
-            href="reports.php"
-            class="btn"
-            style="background: #757575;"
-        >
-            Clear
+                <p style="color: #7A869A; margin-bottom: 20px;">
+                    <?= htmlspecialchars($fromDate, ENT_QUOTES, 'UTF-8'); ?>
+                    to
+                    <?= htmlspecialchars($toDate, ENT_QUOTES, 'UTF-8'); ?>
+                </p>
+
+                <div class="cards">
+                    <div class="card">
+                        <h3>Sales</h3>
+                        <p>₱<?= number_format((float) $dateRange['sales'], 2); ?></p>
+                    </div>
+
+                    <div class="card">
+                        <h3>Expenses</h3>
+                        <p>₱<?= number_format((float) $dateRange['expenses'], 2); ?></p>
+                    </div>
+
+                    <div class="card">
+                        <h3>Profit / Loss</h3>
+                        <p style="color: <?= $dateRange['profit'] >= 0 ? '#1B5E20' : '#D32F2F'; ?>;">
+                            ₱<?= number_format((float) $dateRange['profit'], 2); ?>
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+
+        <?php } ?>
+
+    </div>
+
+    <!-- PRINT AND EXPORT BUTTONS -->
+    <div class="reports-action-buttons">
+        <a href="reports.php?action=printSales" target="_blank" class="btn" style="background:#0288D1;">
+            🖨️ Print Monthly Report
         </a>
 
-    </form>
+        <a href="export.php" class="btn" style="background:#2E7D32;">
+            📥 Export Excel CSV
+        </a>
+    </div>
 
 </div>
-        </div>
-        
-        <!-- 🌟 STEP 10E CONNECTED: Exporting Action Panel Buttons Row -->
-        <div style="display:flex; gap:12px;">
-            <a href="reports.php?action=printSales" target="_blank" class="btn" style="background:#0288D1;">🖨️ Print Monthly Report</a>
-            <a href="export.php" class="btn" style="background:#2E7D32;">📥 Export Excel CSV</a>
-        </div>
-    </div>
+
 
     <!-- 📊 TIME-SERIES SUMMARY AGGREGATE VALUES MATRIX -->
     <div class="cards" style="margin-bottom: 30px;">
@@ -102,23 +172,12 @@
         </div>
     </div>
 
-    <!-- 🌟 STEP 10D ADDED: Monthly Structural Financial Summary Card Row -->
-    <div class="card" style="margin-bottom: 30px; padding:24px; border-radius:12px; background:#ffffff;">
-        <h3 style="font-size: 14px; color: #5A6A85; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom:15px;">
-            Current Monthly Consolidated Statements Summary
-        </h3>
-        <div style="display: flex; gap: 40px; font-size:16px;">
-            <p><strong>Gross realized turnover:</strong> <span style="color:#2E7D32; font-weight:700;">₱<?= number_format($summary['sales'], 2); ?></span></p>
-            <p><strong>Total expenditures balance:</strong> <span style="color:#C62828; font-weight:700;">₱<?= number_format($summary['expenses'], 2); ?></span></p>
-            <p><strong>Net operating residual income:</strong> <span style="color:<?= $summary['profit'] >= 0 ? '#1B5E20;' : '#D32F2F;' ?> font-weight:700;">₱<?= number_format($summary['profit'], 2); ?></span></p>
-        </div>
-    </div>
 
     <!-- 📊 TWO-COLUMN GRID: TREND CHART & RECENT TRANSACTIONS LEDGER -->
-    <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 24px; align-items: start;">
+    <div class="reports-chart-grid">
         
         <!-- LEFT PANEL: Line Trend Chart Canvas -->
-        <div class="card" style="padding: 24px; border-radius: 12px; background: #ffffff;">
+        <div class="card reports-chart-card" style="padding: 24px; border-radius: 12px; background: #ffffff;">
             <h3 style="font-size: 13px; color: #5A6A85; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 20px;">
                 Sales Trend Graph (Trailing 7 Operational Dates)
             </h3>
@@ -128,7 +187,7 @@
         </div>
 
         <!-- RIGHT PANEL: Recent Completed Orders Matrix -->
-        <div class="card" style="padding: 0; overflow: hidden; border-radius: 12px; background: #ffffff;">
+        <div class="card reports-orders-card" style="padding: 0; overflow: hidden; border-radius: 12px; background: #ffffff;">
             <h3 style="padding: 20px; font-size: 13px; color: #5A6A85; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #E5E9F0; margin: 0;">
                 Recent Completed Orders
             </h3>
@@ -273,48 +332,7 @@
     </table>
 
 </div>
-<?php if ($dateRange !== null) { ?>
 
-<div class="card" style="margin-bottom: 30px; padding: 24px; border-radius: 12px; background: #ffffff;">
-
-    <h3 style="font-size: 14px; color: #5A6A85; margin-bottom: 15px;">
-        Date Range Report
-    </h3>
-
-    <p style="color: #7A869A; margin-bottom: 20px;">
-        <?= htmlspecialchars($fromDate); ?>
-        to
-        <?= htmlspecialchars($toDate); ?>
-    </p>
-
-    <div class="cards">
-
-        <div class="card">
-            <h3>Sales</h3>
-            <p>
-                ₱<?= number_format($dateRange['sales'], 2); ?>
-            </p>
-        </div>
-
-        <div class="card">
-            <h3>Expenses</h3>
-            <p>
-                ₱<?= number_format($dateRange['expenses'], 2); ?>
-            </p>
-        </div>
-
-        <div class="card">
-            <h3>Profit / Loss</h3>
-            <p style="color: <?= $dateRange['profit'] >= 0 ? '#1B5E20' : '#D32F2F'; ?>;">
-                ₱<?= number_format($dateRange['profit'], 2); ?>
-            </p>
-        </div>
-
-    </div>
-
-</div>
-
-<?php } ?>
 
 <!-- ChartJS Script Canvas Wiring Engine -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -352,7 +370,11 @@ document.addEventListener("DOMContentLoaded", function() {
             scales: {
                 y: {
                     beginAtZero: true,
-                    ticks: { callback: function(value) { return '₱' + value.toLocaleString(); }, color: "#5A6A85", font: { size: 11 } },
+                    ticks: { callback: function(value) {
+    return '₱' + Number(value).toLocaleString('en-PH', {
+        maximumFractionDigits: 0
+    });
+}, color: "#5A6A85", font: { size: 11 } },
                     grid: { color: "rgba(0, 0, 0, 0.04)" }
                 },
                 x: { ticks: { color: "#5A6A85", font: { size: 11 } }, grid: { display: false } }
@@ -360,6 +382,22 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 });
+</script>
+
+<script>
+function toggleCustomDates() {
+    const period = document.getElementById('period').value;
+    const customFields = document.getElementById('customDateFields');
+    const fromDate = document.getElementById('from_date');
+    const toDate = document.getElementById('to_date');
+
+    const isCustom = period === 'custom';
+
+    customFields.style.display = isCustom ? 'flex' : 'none';
+
+    fromDate.required = isCustom;
+    toDate.required = isCustom;
+}
 </script>
 
 <?php include 'app/views/layouts/footer.php';?>

@@ -108,23 +108,42 @@ class ReportModel{
 
     }
 
-    /**
-     * Compile running time-series vectors over the trailing 7 operational dates
-     */
-    public function getWeeklyTrend(){
+   
 
-        return $this->pdo->query("
+public function getTrendForPeriod($fromDate, $toDate, $period)
+{
+    if ($period === 'yearly') {
+        $sql = "
             SELECT
-                DATE(completed_at) as sale_date,
-                SUM(total_amount) as total
+                DATE_FORMAT(completed_at, '%Y-%m-01') AS sale_date,
+                COALESCE(SUM(total_amount), 0) AS total
             FROM orders
-            WHERE status='Completed'
-            AND completed_at>=DATE_SUB(CURDATE(),INTERVAL 6 DAY)
+            WHERE status = 'Completed'
+              AND completed_at >= ?
+              AND completed_at < DATE_ADD(?, INTERVAL 1 DAY)
+            GROUP BY YEAR(completed_at), MONTH(completed_at)
+            ORDER BY sale_date ASC
+        ";
+    } else {
+        $sql = "
+            SELECT
+                DATE(completed_at) AS sale_date,
+                COALESCE(SUM(total_amount), 0) AS total
+            FROM orders
+            WHERE status = 'Completed'
+              AND completed_at >= ?
+              AND completed_at < DATE_ADD(?, INTERVAL 1 DAY)
             GROUP BY DATE(completed_at)
             ORDER BY sale_date ASC
-        ")->fetchAll(PDO::FETCH_ASSOC);
-
+        ";
     }
+
+    $stmt = $this->pdo->prepare($sql);
+    $stmt->execute([$fromDate, $toDate]);
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
         /**
      * Compile separate financial key-value performance indicators data packages array
      */
@@ -159,18 +178,22 @@ class ReportModel{
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
+
 public function getDateRangeSummary($fromDate, $toDate)
 {
+    // Sales from completed orders within the selected dates
     $salesStmt = $this->pdo->prepare("
         SELECT IFNULL(SUM(total_amount), 0)
         FROM orders
         WHERE status = 'Completed'
-        AND DATE(completed_at) BETWEEN ? AND ?
+        AND completed_at >= ?
+        AND completed_at < DATE_ADD(?, INTERVAL 1 DAY)
     ");
 
     $salesStmt->execute([$fromDate, $toDate]);
-    $sales = $salesStmt->fetchColumn();
+    $sales = (float) $salesStmt->fetchColumn();
 
+    // Expenses recorded within the selected dates
     $expenseStmt = $this->pdo->prepare("
         SELECT IFNULL(SUM(amount), 0)
         FROM expenses
@@ -178,7 +201,7 @@ public function getDateRangeSummary($fromDate, $toDate)
     ");
 
     $expenseStmt->execute([$fromDate, $toDate]);
-    $expenses = $expenseStmt->fetchColumn();
+    $expenses = (float) $expenseStmt->fetchColumn();
 
     return [
         'sales' => $sales,

@@ -109,4 +109,16 @@ public function getAll($category = '')
 
         return $stmt->execute([$id]);
     }
+    
+    public function activate($id)
+    {
+        $stmt = $this->pdo->prepare("
+            UPDATE products
+            SET status = 'Active'
+            WHERE product_id = ?
+        ");
+
+        return $stmt->execute([$id]);
+    }
+
 }

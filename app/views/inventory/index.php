@@ -6,124 +6,163 @@
 
     <div class="content">
 
-        <!-- PAGE HEADER -->
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+        
+<!-- PAGE HEADER -->
+<div style="
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:12px;
+    margin-bottom:20px;
+">
 
-            <h1>Inventory Dashboard</h1>
+    <h1 style="margin:0;">Inventory Dashboard</h1>
 
-            <a href="inventory.php?action=add_batch" class="btn">
-                + Add Batch
-            </a>
+    <div style="
+        display:flex;
+        align-items:center;
+        flex-wrap:wrap;
+        gap:10px;
+    ">
 
-        </div>
+        <a href="inventory.php?action=scan_qr"
+           class="btn"
+           style="
+               background:#166534;
+               color:#fff;
+               text-decoration:none;
+           ">
+            Scan Batch QR
+        </a>
+
+        <a href="inventory.php?action=add_batch" class="btn">
+            + Add Batch
+        </a>
+
+    </div>
+
+</div>
 
 
-        <!-- CURRENT STOCK LEVELS -->
-        <h2 style="font-size:18px; margin-bottom:12px; color:#5A6A85;">
-            Current Stock Levels
+<section class="content-section">
+    <div style="margin-bottom:16px;">
+        <h2 style="margin:0 0 6px; font-size:20px; color:#334155;">
+            Product Stock Overview
         </h2>
 
-        <div class="card" style="padding:0; overflow:hidden; margin-bottom:30px;">
+        <p style="margin:0; color:#64748b; font-size:14px;">
+            Monitor stock levels, reorder points, and projected sales value.
+            Select a product for more details.
+        </p>
+    </div>
 
-            <table>
+    <div class="inventory-product-grid">
+        <?php foreach ($stocks as $s): ?>
+            <?php
+                $stock = (float) $s['current_stock'];
+                $reorder = (float) $s['reorder_level'];
+                $price = (float) ($s['selling_price'] ?? 0);
+                $projectedValue = $stock * $price;
+                $isLowStock = $stock <= $reorder;
 
-                <tr>
-                    <th>Product</th>
-                    <th>Current Stock</th>
-                    <th>Reorder Level</th>
-                    <th>Status</th>
-                </tr>
+                $imagePath = !empty($s['image'])
+                    ? '../public/' . ltrim($s['image'], '/')
+                    : '';
+            ?>
 
-                <?php if (empty($stocks)) { ?>
+            <details class="inventory-product-card">
+    <summary class="inventory-product-summary">
+                    <?php if ($imagePath): ?>
+                        <img
+    class="inventory-product-image"
+    src="<?= htmlspecialchars($imagePath) ?>"
+    alt="<?= htmlspecialchars($s['product_name']) ?>"
+    loading="lazy"
+    onerror="this.style.display='none';"
+>
+                    <?php else: ?>
+                        <div class="inventory-no-image">
+                            No product image
+                        </div>
+                    <?php endif; ?>
 
-                    <tr>
-                        <td colspan="4"
-                            style="text-align:center; color:#7A869A; padding:25px;">
-                            No inventory records found.
-                        </td>
-                    </tr>
+                    <div class="inventory-product-info">
+                        <h3>
+                            <?= htmlspecialchars($s['product_name']) ?>
+                        </h3>
 
-                <?php } else { ?>
+                        <p>
+                            Remaining Stock:
+                            <strong>
+                                <?= number_format($stock, 0) ?>
+                                <?= htmlspecialchars($s['unit']) ?>
+                            </strong>
+                        </p>
 
-                    <?php foreach ($stocks as $s) { ?>
+                        <span class="inventory-stock-badge <?= $isLowStock ? 'low' : 'normal' ?>">
+                            <?= $isLowStock ? 'Low Stock' : 'In Stock' ?>
+                        </span>
 
-                        <?php
-                        $currentStock = (float)$s['current_stock'];
-                        $reorderLevel = (float)$s['reorder_level'];
-                        ?>
+                        <p class="inventory-card-hint">
+                            Click to view details
+                        </p>
+                    </div>
+                </summary>
 
-                        <tr>
+                <div class="inventory-product-details">
+                    <p>
+                        <strong>Reorder Level:</strong>
+                        <?= number_format($reorder, 0) ?>
+                        <?= htmlspecialchars($s['unit']) ?>
+                    </p>
 
-                            <td>
-                                <b>
-                                    <?= htmlspecialchars($s['product_name']); ?>
-                                </b>
-                            </td>
+                    <p>
+                        <strong>Selling Price:</strong>
+                        ₱<?= number_format($price, 2) ?>
+                    </p>
 
-                            <td>
+                    <p>
+                        <strong>Projected Sales Value:</strong>
+                        <span class="inventory-projected-value">
+                            ₱<?= number_format($projectedValue, 2) ?>
+                        </span>
+                    </p>
 
-                                <span class="role-tag"
-                                      style="
-                                      background:#ECEFF1;
-                                      color:#455A64;
-                                      font-size:14px;
-                                      ">
+                    <p class="inventory-value-note">
+                        Estimated value if all remaining stock were sold
+                        at the current selling price. This is not actual
+                        sales revenue or profit.
+                    </p>
 
-                                    <?= number_format($currentStock, 2); ?>
-                                    <?= htmlspecialchars($s['unit']); ?>
+                    <?php if (!empty($s['description'])): ?>
+                        <p>
+                            <strong>Description:</strong>
+                            <?= htmlspecialchars($s['description']) ?>
+                        </p>
+                    <?php endif; ?>
 
-                                </span>
+                    <a
+                        class="btn btn-primary"
+                        href="inventory.php?action=add_batch"
+                    >
+                        Add Inventory Batch
+                    </a>
+                </div>
+            </details>
+        <?php endforeach; ?>
+    </div>
+</section>
 
-                            </td>
-
-                            <td>
-
-                                <?= number_format($reorderLevel, 2); ?>
-                                <?= htmlspecialchars($s['unit']); ?>
-
-                            </td>
-
-                            <td>
-
-                                <?php if ($currentStock <= $reorderLevel) { ?>
-
-                                    <span class="role-tag"
-                                          style="
-                                          background:#FFEBEE;
-                                          color:#C62828;
-                                          ">
-                                        ⚠️ LOW STOCK
-                                    </span>
-
-                                <?php } else { ?>
-
-                                    <span class="role-tag"
-                                          style="
-                                          background:#E8F5E9;
-                                          color:#2E7D32;
-                                          ">
-                                        Optimal Available
-                                    </span>
-
-                                <?php } ?>
-
-                            </td>
-
-                        </tr>
-
-                    <?php } ?>
-
-                <?php } ?>
-
-            </table>
-
-        </div>
 
 
         <!-- INVENTORY BATCH LEDGER -->
-        <h2 style="font-size:18px; margin-bottom:12px; color:#5A6A85;">
-            FIFO Batches Ledger
-        </h2>
+     <h2 style="font-size:20px; margin:28px 0 12px; color:#334155;">
+    FIFO Batches Ledger
+</h2>
+<p style="margin:-4px 0 16px; color:#64748b; font-size:14px;">
+    View received quantities, remaining stock, batch status, and QR details.
+</p>
 
         <div class="card" style="padding:0; overflow:hidden;">
 
@@ -136,12 +175,13 @@
                     <th>Remaining</th>
                     <th>Date Received</th>
                     <th>Status</th>
+                    <th>Action</th>
                 </tr>
 
                 <?php if (empty($batches)) { ?>
 
                     <tr>
-                        <td colspan="6"
+                        <td colspan="7"
                             style="text-align:center; color:#7A869A; padding:25px;">
                             No inventory batches found.
                         </td>
@@ -150,12 +190,13 @@
                 <?php } else { ?>
 
                     <?php foreach ($batches as $b) { ?>
-
+                
                         <tr style="
                             <?= $b['status'] === 'Depleted'
                                 ? 'opacity:0.55; background:#FAFAFA;'
                                 : ''; ?>
                         ">
+                            
 
                             <!-- BATCH NUMBER -->
                             <td>
@@ -186,9 +227,9 @@
                             <td>
 
                                 <?= number_format(
-                                    (float)$b['quantity_received'],
-                                    2
-                                ); ?>
+                                (int)$b['quantity_received'],
+                                0
+                            ); ?>
 
                             </td>
 
@@ -210,8 +251,8 @@
                                       ">
 
                                     <?= number_format(
-                                        (float)$b['quantity_remaining'],
-                                        2
+                                        (int)$b['quantity_remaining'],
+                                        0
                                     ); ?>
 
                                     remaining
@@ -258,6 +299,16 @@
                                 <?php } ?>
 
                             </td>
+                            
+                            <td style="padding:10px;">
+    <a
+        href="inventory.php?action=view_batch&id=<?= (int)$b['batch_id'] ?>"
+        class="btn btn-primary"
+        style="text-decoration:none; white-space:nowrap;"
+    >
+        View QR
+    </a>
+</td>
 
                         </tr>
 

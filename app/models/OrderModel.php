@@ -15,23 +15,25 @@ class OrderModel
     /**
      * Fetch all orders with customer and encoder information.
      */
-    public function getAllOrders()
-    {
-        $sql = "
-            SELECT
-                o.*,
-                c.customer_name,
-                u.full_name AS encoder_name
-            FROM orders o
-            JOIN customers c
-                ON o.customer_id = c.customer_id
-            LEFT JOIN users u
-                ON o.encoded_by = u.user_id
-            ORDER BY o.created_at DESC
-        ";
+  
+public function getAllOrders()
+{
+    $sql = "
+        SELECT
+            o.*,
+            COALESCE(NULLIF(o.customer_name, ''), c.customer_name) AS customer_name,
+            COALESCE(NULLIF(o.contact_number, ''), c.contact_number) AS contact_number,
+            u.full_name AS encoder_name
+        FROM orders o
+        JOIN customers c
+            ON o.customer_id = c.customer_id
+        LEFT JOIN users u
+            ON o.encoded_by = u.user_id
+        ORDER BY o.created_at DESC
+    ";
 
-        return $this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
-    }
+    return $this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+}
 
     /**
      * Fetch one order by ID.
@@ -97,15 +99,18 @@ class OrderModel
     /**
      * Create a new order and its order details.
      */
-    public function createOrder(
-        $customer_id,
-        $order_source,
-        $delivery_address,
-        $remarks,
-        $product_ids,
-        $quantities,
-        $encoded_by
-    ) {
+   public function createOrder(
+    $customer_id,
+    $order_source,
+    $delivery_address,
+    $remarks,
+    $product_ids,
+    $quantities,
+    $encoded_by,
+    $customer_name = null,
+    $contact_number = null
+)
+   {
         $allowedSources = [
             'Website',
             'Messenger',
@@ -154,32 +159,36 @@ class OrderModel
             /*
              * Create the main order.
              */
-            $sql = "
-                INSERT INTO orders
-                (
-                    customer_id,
-                    order_source,
-                    delivery_address,
-                    remarks,
-                    status,
-                    total_amount,
-                    encoded_by
-                )
-                VALUES (?, ?, ?, ?, 'Pending', 0.00, ?)
-            ";
+          $sql = "
+    INSERT INTO orders
+    (
+        customer_id,
+        customer_name,
+        contact_number,
+        order_source,
+        delivery_address,
+        remarks,
+        status,
+        total_amount,
+        encoded_by
+    )
+    VALUES (?, ?, ?, ?, ?, ?, 'Pending', 0.00, ?)
+";
 
-            $stmt = $this->pdo->prepare($sql);
+$stmt = $this->pdo->prepare($sql);
 
-            $stmt->execute([
-                $customer_id,
-                $order_source,
-                $delivery_address,
-                $remarks,
-                $encoded_by
-            ]);
+$stmt->execute([
+    $customer_id,
+    $customer_name,
+    $contact_number,
+    $order_source,
+    $delivery_address,
+    $remarks,
+    $encoded_by
+]);
 
-            $order_id = $this->pdo->lastInsertId();
-
+$order_id = $this->pdo->lastInsertId();
+            
             $total_amount = 0;
             $item_count = 0;
 
@@ -194,20 +203,37 @@ class OrderModel
              */
             foreach ($product_ids as $index => $product_id) {
 
-                $product_id = intval($product_id);
+    // Skip rows where no product was selected.
+    if ($product_id === '' || $product_id === null) {
+        continue;
+    }
 
-                if ($product_id <= 0) {
-                    continue;
-                }
+    // Product ID must be a valid positive integer.
+    $validatedProductId = filter_var(
+        $product_id,
+        FILTER_VALIDATE_INT
+    );
 
-                $qty = intval(
-                    $quantities[$index] ?? 0
-                );
+    if ($validatedProductId === false || $validatedProductId <= 0) {
+        throw new Exception("Please select a valid product.");
+    }
 
-                if ($qty <= 0) {
-                    continue;
-                }
+    $product_id = $validatedProductId;
 
+    // Quantity must be a whole number greater than zero.
+    $rawQty = $quantities[$index] ?? '';
+
+    if (
+        !is_scalar($rawQty) ||
+        !preg_match('/^[1-9][0-9]*$/', (string)$rawQty)
+    ) {
+        throw new Exception(
+            "Product quantities must be whole boxes greater than zero."
+        );
+    }
+
+    $qty = (int)$rawQty;
+                
                 /*
                  * Prevent duplicate product entries.
                  */

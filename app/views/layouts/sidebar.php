@@ -1,270 +1,81 @@
-<div
-    class="sidebar"
-    style="
-        display: flex;
-        flex-direction: column;
-        align-items: stretch;
-        text-align: left;
-        background: #ffffff;
-        width: 260px;
-        min-width: 260px;
-        border-right: 1px solid #E5E9F0;
-        padding: 24px;
-        min-height: 100vh;
-    "
->
 
+<div class="sidebar" id="adminSidebar">
 
-<h2
-    style="
-        font-size: 22px;
-        color: #1B5E20;
-        font-weight: 700;
-        margin-bottom: 4px;
-        letter-spacing: -0.5px;
-        text-align: left;
-    "
->
-    Leah's Popstick
-</h2>
-
-
-<span
-    class="role-tag"
-    style="
-        font-size: 12px;
-        color: #2E7D32;
-        background: #E8F5E9;
-        padding: 4px 8px;
-        border-radius: 4px;
-        display: inline-block;
-        align-self: flex-start;
-        font-weight: 600;
-        margin-bottom: 24px;
-        text-transform: capitalize;
-        text-align: left;
-        width: max-content;
-    "
->
-    <?= htmlspecialchars(
-        $_SESSION['user']['role_name']
-    ); ?>
-</span>
-
-
-<hr
-    style="
-        border: 0;
-        border-top: 1px solid #E5E9F0;
-        margin: 15px 0;
-        width: 100%;
-    "
->
-
-
-<div
-    style="
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
-        width: 100%;
-        text-align: left;
-        align-items: stretch;
-    "
->
-
-    <?php
-
-    $role = $_SESSION['user']['role_name'] ?? '';
-
-    $linkStyle = "
-        display: block;
-        color: #5A6A85;
-        padding: 12px 16px;
-        text-decoration: none;
-        font-size: 15px;
-        font-weight: 500;
-        border-radius: 8px;
-        text-align: left;
-    ";
-
-    ?>
-
-
-    <!-- OWNER -->
-
-    <?php if ($role === "Owner") { ?>
-
-        <a
-            href="index.php"
-            style="<?= $linkStyle; ?>"
+    <!-- BUSINESS BRANDING -->
+    <a href="index.php" class="nav-brand">
+        <img
+           src="public/shop/images/leah-logo.png"
+            alt="Leah Wooden Products"
+            class="brand-logo"
         >
-            Dashboard
-        </a>
+        <span class="brand-name">Leah Wooden Products</span>
+    </a>
 
-        <a
-            href="orders.php"
-            style="<?= $linkStyle; ?>"
-        >
-            Orders
-        </a>
+    <!-- USER ROLE -->
+    <span class="role-tag">
+        <?= htmlspecialchars(
+            $_SESSION['user']['role_name'] ?? '',
+            ENT_QUOTES,
+            'UTF-8'
+        ); ?>
+    </span>
 
-        <a
-            href="customers.php"
-            style="<?= $linkStyle; ?>"
-        >
-            Customers
-        </a>
+    <hr>
 
-        <a
-            href="products.php"
-            style="<?= $linkStyle; ?>"
-        >
-            Product List
-        </a>
+    <nav class="sidebar-nav">
 
-        <a
-            href="inventory.php"
-            style="<?= $linkStyle; ?>"
-        >
-            Inventory Batches
-        </a>
+        <?php
+        $role = $_SESSION['user']['role_name'] ?? '';
+        ?>
 
-        <a
-            href="raw_materials.php"
-            style="<?= $linkStyle; ?>"
-        >
-            Raw Materials
-        </a>
+        <!-- OWNER -->
+        <?php if ($role === "Owner") { ?>
 
-        <a
-            href="expenses.php"
-            style="<?= $linkStyle; ?>"
-        >
-            Expenses Ledger
-        </a>
+            <a href="index.php">Dashboard</a>
+            <a href="orders.php">Orders</a>
+            <a href="customers.php">Customers</a>
+            <a href="products.php">Product List</a>
+            <a href="inventory.php">Inventory Batches</a>
+            <a href="raw_materials.php">Raw Materials</a>
+            <a href="expenses.php">Expenses Ledger</a>
+            <a href="reports.php">Reports</a>
+            <a href="users.php">Users</a>
 
-        <a
-            href="reports.php"
-            style="<?= $linkStyle; ?>"
-        >
-            Reports
-        </a>
+        <?php } ?>
 
-        <a
-            href="users.php"
-            style="<?= $linkStyle; ?>"
-        >
-            Users
-        </a>
+        <!-- BOOKKEEPER -->
+        <?php if ($role === "Bookkeeper") { ?>
 
-    <?php } ?>
+            <a href="index.php">Dashboard</a>
+            <a href="expenses.php">Expenses Ledger</a>
+            <a href="reports.php">Reports</a>
 
+        <?php } ?>
 
-    <!-- BOOKKEEPER -->
+        <!-- OFFICE STAFF -->
+        <?php if ($role === "Office Staff") { ?>
 
-    <?php if ($role === "Bookkeeper") { ?>
+            <a href="index.php">Dashboard</a>
+            <a href="orders.php">Orders</a>
+            <a href="customers.php">Customers</a>
+            <a href="products.php">Product List</a>
+            <a href="inventory.php">Inventory Batches</a>
+            <a href="raw_materials.php">Raw Materials</a>
 
-        <a
-            href="index.php"
-            style="<?= $linkStyle; ?>"
-        >
-            Dashboard
-        </a>
+        <?php } ?>
 
-        <a
-            href="expenses.php"
-            style="<?= $linkStyle; ?>"
-        >
-            Expenses Ledger
-        </a>
+    </nav>
 
-        <a
-            href="reports.php"
-            style="<?= $linkStyle; ?>"
-        >
-            Reports
-        </a>
+    <hr class="sidebar-bottom-divider">
 
-    <?php } ?>
-
-
-    <!-- OFFICE STAFF -->
-
-    <?php if ($role === "Office Staff") { ?>
-
-        <a
-            href="index.php"
-            style="<?= $linkStyle; ?>"
-        >
-            Dashboard
-        </a>
-
-        <a
-            href="orders.php"
-            style="<?= $linkStyle; ?>"
-        >
-            Orders
-        </a>
-
-        <a
-            href="customers.php"
-            style="<?= $linkStyle; ?>"
-        >
-            Customers
-        </a>
-
-        <a
-            href="products.php"
-            style="<?= $linkStyle; ?>"
-        >
-            Product List
-        </a>
-
-        <a
-            href="inventory.php"
-            style="<?= $linkStyle; ?>"
-        >
-            Inventory Batches
-        </a>
-
-        <a
-            href="raw_materials.php"
-            style="<?= $linkStyle; ?>"
-        >
-            Raw Materials
-        </a>
-
-    <?php } ?>
+    <a href="logout.php" class="logout-btn">Logout</a>
 
 </div>
 
-
-<hr
-    style="
-        border: 0;
-        border-top: 1px solid #E5E9F0;
-        margin: auto 0 15px 0;
-        width: 100%;
-    "
->
-
-
-<a
-    href="logout.php"
-    class="logout-btn"
-    style="
-        display: block;
-        color: #D32F2F;
-        padding: 12px 16px;
-        text-decoration: none;
-        font-size: 15px;
-        font-weight: 600;
-        border-radius: 8px;
-        text-align: left;
-    "
->
-    Logout
-</a>
-
-</div>
+<!-- Mobile menu overlay: only one instance -->
+<button
+    type="button"
+    class="sidebar-overlay"
+    id="sidebarOverlay"
+    aria-label="Close navigation menu"
+></button>

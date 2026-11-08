@@ -32,36 +32,53 @@ include 'app/views/layouts/header.php';
 
     <?php include 'app/views/layouts/sidebar.php'; ?>
 
-    <div class="content">
+    
+<div class="content">
 
-        <h1>Office Staff Dashboard</h1>
+    <div class="dashboard-heading">
+        <div>
+            <h1>Office Staff Dashboard</h1>
+            <p>Manage customer orders and inventory.</p>
+        </div>
 
-        <p>Manage customer orders and inventory.</p>
+        <a
+            href="/public/shop/index.php"
+            class="visit-shop-btn dashboard-visit-shop"
+            target="_blank"
+            rel="noopener noreferrer"
+        >
+            <span aria-hidden="true">🛍</span>
+            <span>Visit Shop</span>
+        </a>
+    </div>
 
         <div class="cards">
 
-            <div class="card">
-                <h3>Pending Orders</h3>
-                <p><?= $pendingOrders; ?></p>
-            </div>
+    <a href="orders.php" class="card dashboard-card">
+        <h3>Pending Orders</h3>
+        <p><?= $pendingOrders; ?></p>
+        <span>View pending orders →</span>
+    </a>
 
-            <div class="card">
-                <h3>Processing Orders</h3>
-                <p><?= $processingOrders; ?></p>
-            </div>
+    <a href="orders.php" class="card dashboard-card">
+        <h3>Processing Orders</h3>
+        <p><?= $processingOrders; ?></p>
+        <span>Manage orders →</span>
+    </a>
 
-            <div class="card">
-                <h3>Completed Orders</h3>
-                <p><?= $completedOrders; ?></p>
-            </div>
+    <a href="orders.php" class="card dashboard-card">
+        <h3>Completed Orders</h3>
+        <p><?= $completedOrders; ?></p>
+        <span>View completed orders →</span>
+    </a>
 
-            <div class="card">
-                <h3>Active Products</h3>
-                <p><?= $activeProducts; ?></p>
-            </div>
+    <a href="products.php" class="card dashboard-card">
+        <h3>Active Products</h3>
+        <p><?= $activeProducts; ?></p>
+        <span>View products →</span>
+    </a>
 
-        </div>
-
+</div>
     </div>
 
 </div>

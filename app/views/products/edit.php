@@ -97,23 +97,39 @@
 
                 </div>
 
-                <div class="form-group">
-                    <label>Current Product Image</label>
+                
+<div class="form-group">
+    <label>Current Product Image</label>
 
-                    <?php if (!empty($item['image'])) { ?>
-                        <div style="margin-bottom: 12px;">
-                            
-<img
-    src="/leahs-popstick/public/<?= htmlspecialchars($item['image'], ENT_QUOTES, 'UTF-8'); ?>"
-    alt="<?= htmlspecialchars($item['product_name'], ENT_QUOTES, 'UTF-8'); ?>"
-    style="width: 180px; height: 140px; object-fit: cover; border-radius: 8px;"
->
-
-                        </div>
-                    <?php } else { ?>
-                        <p>No image uploaded yet.</p>
-                    <?php } ?>
-                </div>
+    <?php if (!empty($item['image'])) { ?>
+        <div style="margin-bottom: 12px;">
+            <img
+                src="/public/<?= htmlspecialchars(
+                    ltrim($item['image'], '/'),
+                    ENT_QUOTES,
+                    'UTF-8'
+                ); ?>"
+                alt="<?= htmlspecialchars(
+                    $item['product_name'],
+                    ENT_QUOTES,
+                    'UTF-8'
+                ); ?>"
+                style="
+                    display: block;
+                    width: 180px;
+                    height: 140px;
+                    object-fit: contain;
+                    background: #f5f5f5;
+                    border: 1px solid #ddd;
+                    border-radius: 8px;
+                    padding: 5px;
+                "
+            >
+        </div>
+    <?php } else { ?>
+        <p>No image uploaded yet.</p>
+    <?php } ?>
+</div>
 
                 <div class="form-group">
                     <label>Replace Product Image (optional)</label>

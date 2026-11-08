@@ -2,8 +2,15 @@
 
 <div class="login-body-wrapper">
     <div class="login-container">
-        <h1>Leah's Popstick</h1>
-        <p>Sign in to manage operations</p>
+        <a href="index.php" class="login-brand">
+    <img
+        src="/public/shop/images/leah-logo.png"
+        alt="Leah Wooden Products logo"
+        class="login-brand-logo"
+    >
+</a>
+
+<p>Sign in to manage operations</p>
         
         <?php 
         if (isset($_SESSION['error'])) {

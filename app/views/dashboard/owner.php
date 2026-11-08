@@ -30,35 +30,54 @@ include 'app/views/layouts/header.php';
     <?php include 'app/views/layouts/sidebar.php'; ?>
 
     <div class="content">
-        <h1>Owner Dashboard</h1>
 
-        <p>
-            Welcome, <?= htmlspecialchars($_SESSION['user']['full_name']); ?>
-        </p>
+    <div class="dashboard-heading">
+        <div>
+            <h1>Owner Dashboard</h1>
+
+            <p>
+                Welcome, <?= htmlspecialchars($_SESSION['user']['full_name']); ?>
+            </p>
+        </div>
+
+        <a
+            href="/public/shop/index.php"
+            class="visit-shop-btn dashboard-visit-shop"
+            target="_blank"
+            rel="noopener noreferrer"
+        >
+            <span aria-hidden="true">🛍</span>
+            <span>Visit Shop</span>
+        </a>
+    </div>
         
         <div class="cards">
 
-            <div class="card">
-                <h3>Active Products</h3>
-                <p><?= $totalProducts; ?></p>
-            </div>
+    <a href="products.php" class="card dashboard-card">
+        <h3>Active Products</h3>
+        <p><?= $totalProducts; ?></p>
+        <span>View products →</span>
+    </a>
 
-            <div class="card">
-                <h3>Total Orders</h3>
-                <p><?= $totalOrders; ?></p>
-            </div>
+    <a href="orders.php" class="card dashboard-card">
+        <h3>Total Orders</h3>
+        <p><?= $totalOrders; ?></p>
+        <span>Manage orders →</span>
+    </a>
 
-            <div class="card">
-                <h3>Sales Revenue</h3>
-                <p>₱<?= number_format($totalSales, 2); ?></p>
-            </div>
+    <a href="reports.php" class="card dashboard-card">
+        <h3>Sales Revenue</h3>
+        <p>₱<?= number_format($totalSales, 2); ?></p>
+        <span>View reports →</span>
+    </a>
 
-            <div class="card">
-                <h3>Total Expenses</h3>
-                <p>₱<?= number_format($totalExpenses, 2); ?></p>
-            </div>
+    <a href="expenses.php" class="card dashboard-card">
+        <h3>Total Expenses</h3>
+        <p>₱<?= number_format($totalExpenses, 2); ?></p>
+        <span>View expenses →</span>
+    </a>
 
-        </div>
+</div>
     </div>
 </div>
 

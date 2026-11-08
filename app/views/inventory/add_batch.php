@@ -63,31 +63,36 @@
 
                 </div>
 
-                <div class="form-group">
+                
+<div class="form-group">
 
-                    <label>Batch Number</label>
+    <label>Batch Number</label>
 
-                    <input
-                        type="text"
-                        name="batch_number"
-                        required
-                        placeholder="e.g., B001"
-                    >
+    <input
+        type="text"
+        value="Generated automatically when saved"
+        readonly
+        style="
+            width:100%;
+            padding:12px;
+            border:1px solid #E0E0E0;
+            border-radius:8px;
+            background:#F1F5F9;
+            color:#64748B;
+        "
+    >
 
-                </div>
+    <small style="color:#64748B;">
+        The system will assign a unique batch number after saving.
+    </small>
+
+</div>
 
                 <div class="form-group">
 
                     <label>Quantity Received</label>
 
-                    <input
-                        type="number"
-                        name="quantity"
-                        min="0.01"
-                        step="0.01"
-                        required
-                        placeholder="Enter quantity"
-                    >
+                    <input type="number" name="quantity" min="1" step="1" required placeholder="Enter quantity">
 
                 </div>
 

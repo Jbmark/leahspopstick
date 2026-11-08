@@ -57,11 +57,12 @@
             <table>
                 <tr>
                     <th>ID</th>
-                    <th>Product</th>
-                    <th>Price</th>
-                    <th>Stock</th>
-                    <th>Status</th>
-                    <th>Action</th>
+<th>Product</th>
+<th>Price</th>
+<th>Stock</th>
+<th>Projected Sales Value</th>
+<th>Status</th>
+<th>Action</th>
                 </tr>
                 <?php foreach($products as $p){ ?>
                 <tr>
@@ -93,15 +94,56 @@
         </small>
     <?php } ?>
 </td>
+                    
+                    <td>
+    <?php
+    $projectedSalesValue = $stock * (float)$p['selling_price'];
+    ?>
+
+    <strong style="color:#166534;">
+        ₱<?= number_format($projectedSalesValue, 2); ?>
+    </strong>
+
+    <br>
+
+    <small style="color:#777;">
+        <?= number_format($stock, 0); ?> ×
+        ₱<?= number_format((float)$p['selling_price'], 2); ?>
+    </small>
+</td>
+                    
                     <td>
                         <span class="role-tag" style="background: <?= $p['status'] == 'Active' ? '#E8F5E9; color:#2E7D32;' : '#FFEBEE; color:#C62828;' ?>">
                             <?= $p['status']; ?>
                         </span>
                     </td>
                     <td>
-                        <a href="products.php?action=edit&id=<?= $p['product_id']; ?>" style="color:#1B5E20; font-weight:600; text-decoration:none;">Edit</a>
-                        <span style="color:#ddd; margin:0 8px;">|</span>
-                        <a href="products.php?action=delete&id=<?= $p['product_id']; ?>" style="color:#D32F2F; font-weight:600; text-decoration:none;" onclick="return confirm('Deactivate this product?')">Deactivate</a>
+                        
+<a href="products.php?action=edit&id=<?= $p['product_id']; ?>"
+   style="color:#1B5E20; font-weight:600; text-decoration:none;">
+    Edit
+</a>
+
+<span style="color:#ddd; margin:0 8px;">|</span>
+
+<?php if ($p['status'] === 'Active') { ?>
+
+    <a href="products.php?action=delete&id=<?= $p['product_id']; ?>"
+       style="color:#D32F2F; font-weight:600; text-decoration:none;"
+       onclick="return confirm('Deactivate this product?')">
+        Deactivate
+    </a>
+
+<?php } else { ?>
+
+    <a href="products.php?action=activate&id=<?= $p['product_id']; ?>"
+       style="color:#2E7D32; font-weight:600; text-decoration:none;"
+       onclick="return confirm('Reactivate this product?')">
+        Reactivate
+    </a>
+
+<?php } ?>
+
                     </td>
                 </tr>
                 <?php } ?>

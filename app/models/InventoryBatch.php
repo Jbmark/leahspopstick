@@ -98,30 +98,35 @@ class InventoryBatch
     /**
      * Get current stock per active finished product.
      */
-    public function getCurrentStock()
-    {
-        $stmt = $this->pdo->query("
-            SELECT
-                products.product_id,
-                products.product_name,
-                products.reorder_level,
-                products.unit,
-                IFNULL(
-                    SUM(inventory_batches.quantity_remaining),
-                    0
-                ) AS current_stock
-            FROM products
-            LEFT JOIN inventory_batches
-                ON products.product_id = inventory_batches.product_id
-            WHERE products.status = 'Active'
-            GROUP BY
-                products.product_id,
-                products.product_name,
-                products.reorder_level,
-                products.unit
-            ORDER BY products.product_name ASC
-        ");
+    
+public function getCurrentStock()
+{
+    $stmt = $this->pdo->query("
+        SELECT
+            p.product_id,
+            p.product_name,
+            p.description,
+            p.image,
+            p.selling_price,
+            p.reorder_level,
+            p.unit,
+            COALESCE(SUM(ib.quantity_remaining), 0) AS current_stock
+        FROM products p
+        LEFT JOIN inventory_batches ib
+            ON p.product_id = ib.product_id
+            AND ib.status = 'Available'
+        WHERE p.status = 'Active'
+        GROUP BY
+            p.product_id,
+            p.product_name,
+            p.description,
+            p.image,
+            p.selling_price,
+            p.reorder_level,
+            p.unit
+        ORDER BY p.product_name ASC
+    ");
 
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
 }

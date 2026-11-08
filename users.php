@@ -1200,3 +1200,5 @@ function closeEditUser() {
 }
 
 </script>
+
+<?php include 'app/views/layouts/footer.php'; ?>

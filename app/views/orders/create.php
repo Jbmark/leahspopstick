@@ -47,14 +47,7 @@
 
                 <!-- Customer and Order Source -->
 
-                <div
-                    style="
-                        display:grid;
-                        grid-template-columns:1fr 1fr;
-                        gap:16px;
-                        margin-bottom:20px;
-                    "
-                >
+                <div class="order-customer-grid">
 
                     <div class="form-group">
 
@@ -233,24 +226,9 @@
 
                     <?php for ($loop = 0; $loop < 4; $loop++) { ?>
 
-                        <div
-                            style="
-                                display:grid;
-                                grid-template-columns:3fr 1fr;
-                                gap:16px;
-                                margin-bottom:12px;
-                            "
-                        >
+                        <div class="order-product-row">
 
-                            <select
-                                name="product_id[]"
-                                style="
-                                    padding:12px;
-                                    border:1px solid #E0E0E0;
-                                    border-radius:8px;
-                                    background:#FAFAFA;
-                                "
-                            >
+                            <select name="product_id[]" class="order-product-select">
 
                                 <option value="">
                                     -- Choose Product --
@@ -278,17 +256,13 @@
 
 
                             <input
-                                type="number"
-                                name="quantity[]"
-                                min="1"
-                                step="1"
-                                placeholder="Quantity"
-                                style="
-                                    padding:12px;
-                                    border:1px solid #E0E0E0;
-                                    border-radius:8px;
-                                "
-                            >
+    type="number"
+    name="quantity[]"
+    class="order-quantity-input"
+    min="1"
+    step="1"
+    placeholder="Quantity"
+>
 
                         </div>
 

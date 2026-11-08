@@ -20,25 +20,22 @@ $user = $_SESSION['user'];
 /* ==========================================================================
    ROLE-BASED ACCESS CONTROL (RBAC) WORKSPACE ROUTER MATRIX
    ========================================================================== */
-switch($user['role_name']){
+
+switch ($user['role_name']) {
 
     case 'Owner':
         include 'app/views/dashboard/owner.php';
         break;
 
     case 'Bookkeeper':
-        // 🌟 STEP 9F RESOLVED: Instantly route Bookkeepers directly into the dynamic financial panel
-        require_once "app/controllers/ReportController.php";
-        $controller = new ReportController();
-        $controller->dashboard();
-        exit;
+        include 'app/views/dashboard/bookkeeper.php';
+        break;
 
     case 'Office Staff':
         include 'app/views/dashboard/office_staff.php';
         break;
 
     default:
-        // Fallback protection guard if role profiles don't line up cleanly
         echo "Access Restriction Error: Profile parameters unauthorized.";
         exit;
 }

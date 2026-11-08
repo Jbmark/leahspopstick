@@ -1,6 +1,16 @@
 <?php
 
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 require_once '../../config/database.php';
+
+$loggedInCustomer = $_SESSION['customer'] ?? null;
+
+if (!is_array($loggedInCustomer)) {
+    $loggedInCustomer = null;
+}
 
 // Get the selected category from the URL
 $category = $_GET['category'] ?? '';
@@ -66,10 +76,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
     Leah's Popstick - Wood Products Manufacturing
 </title>
 
-<link
-    rel="stylesheet"
-    href="../css/shop.css"
->
+<link rel="stylesheet" href="../css/shop.css?v=logo-fix1">
 
 
 </head>
@@ -81,9 +88,15 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <nav class="shop-navbar">
 
 
-<div class="nav-brand">
-    🌿 Leah's Popstick
-</div>
+<a href="index.php" class="nav-brand">
+        <img
+           src="images/leah-logo.png"
+            alt="Leah Wooden Products"
+            class="brand-logo"
+        >
+        <span class="brand-name">Leah Wooden Products</span>
+    </a>
+    
 
 <div class="nav-links">
 
@@ -95,19 +108,36 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
         Products
     </a>
 
-    <a
-        href="order.php"
-        class="nav-track-btn"
-    >
-        Place an Order
-    </a>
-
-    <a
-        href="track.php"
-        class="nav-track-btn"
-    >
+    <a href="track.php" class="nav-track-btn">
         Track Order
     </a>
+
+
+    <?php if ($loggedInCustomer !== null) { ?>
+
+        <span class="customer-welcome">
+            Hi, <?= htmlspecialchars(
+                $loggedInCustomer['customer_name'] ?? 'Customer',
+                ENT_QUOTES,
+                'UTF-8'
+            ); ?>
+        </span>
+
+        <a href="logout.php">
+            Log Out
+        </a>
+
+    <?php } else { ?>
+
+        <a href="login.php">
+            Customer Login
+        </a>
+
+        <a href="register.php">
+            Register
+        </a>
+
+    <?php } ?>
 
 </div>
 
@@ -318,17 +348,32 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             <?php foreach ($products as $p) { ?>
 
-                <div class="product-item-card">
+                <div
+    class="product-item-card"
+    role="link"
+    tabindex="0"
+    onclick="window.location.href='order.php?product_id=<?= (int) $p['product_id']; ?>'"
+    onkeydown="if (event.target === this && (event.key === 'Enter' || event.key === ' ')) { event.preventDefault(); window.location.href='index.php?add_to_cart=<?= (int) $p['product_id']; ?>'; }"
+>
 
            
 
 
 <div class="card-image-placeholder">
     <?php if (!empty($p['image'])) { ?>
-        <img
-            src="/leahs-popstick/public/<?= htmlspecialchars($p['image'], ENT_QUOTES, 'UTF-8'); ?>"
-            alt="<?= htmlspecialchars($p['product_name'], ENT_QUOTES, 'UTF-8'); ?>"
-        >
+        
+<img
+    src="/public/<?= htmlspecialchars(
+        ltrim($p['image'], '/'),
+        ENT_QUOTES,
+        'UTF-8'
+    ); ?>"
+    alt="<?= htmlspecialchars(
+        $p['product_name'],
+        ENT_QUOTES,
+        'UTF-8'
+    ); ?>"
+>
     <?php } else { ?>
         <span>🪵 Wooden Product</span>
     <?php } ?>

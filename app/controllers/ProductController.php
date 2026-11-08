@@ -102,19 +102,6 @@ function uploadProductImage($imageFolder)
     // Build the absolute destination path
     $destination = $imageFolder . $filename;
 
-    // Save debug information before moving the file
-    file_put_contents(
-        __DIR__ . '/upload-debug.txt',
-        date('Y-m-d H:i:s') .
-        "\nDestination: " . $destination .
-        "\nFolder exists: " . (is_dir($imageFolder) ? 'YES' : 'NO') .
-        "\nFolder writable: " . (is_writable($imageFolder) ? 'YES' : 'NO') .
-        "\nTemporary file: " . $file['tmp_name'] .
-        "\nTemporary file exists: " .
-        (file_exists($file['tmp_name']) ? 'YES' : 'NO') .
-        "\n",
-        FILE_APPEND
-    );
 
     // Move the uploaded file into public/shop/images
     if (!move_uploaded_file($file['tmp_name'], $destination)) {
@@ -215,10 +202,17 @@ if (
         include 'app/views/products/edit.php';
         break;
 
-    case 'delete':
-        $product->deactivate((int) ($_GET['id'] ?? 0));
-        header('Location: products.php');
-        exit;
+  
+case 'delete':
+    $product->deactivate((int) ($_GET['id'] ?? 0));
+    header('Location: products.php');
+    exit;
+
+case 'activate':
+    $product->activate((int) ($_GET['id'] ?? 0));
+    header('Location: products.php');
+    exit;
+
 
 //////////////////////////////////////////////    
 default:

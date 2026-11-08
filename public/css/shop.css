@@ -33,11 +33,23 @@ z-index: 100;
 }
 
 .nav-brand {
-font-size: 24px;
+    display: inline-flex;
+    align-items: center; 
+    text-decoration: none;
+    font-size: 20px;
 font-weight: 700;
 color: #1B5E20;
 letter-spacing: -0.5px;
 }
+
+.brand-logo {
+    display: block;
+    width: 80px;
+    max-width: 100%;
+    height: auto;
+    object-fit: contain;
+}
+
 
 .nav-links {
 display: flex;
@@ -49,7 +61,7 @@ gap: 25px;
 text-decoration: none;
 color: #4A5568;
 font-weight: 600;
-font-size: 14px;
+font-size: 16px;
 transition: color 0.2s;
 }
 
@@ -306,19 +318,26 @@ transform: translateY(-4px);
 box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
 }
 
+
 .card-image-placeholder {
-height: 140px;
-background: #E8F5E9;
+    width: 100%;
+    height: 180px;
+    background: #E8F5E9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #2E7D32;
+    font-weight: 700;
+    font-size: 14px;
+    text-transform: uppercase;
+    overflow: hidden;
+}
 
-display: flex;
-align-items: center;
-justify-content: center;
-
-color: #2E7D32;
-font-weight: 700;
-font-size: 14px;
-text-transform: uppercase;
-
+.card-image-placeholder img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 .card-details {
@@ -418,18 +437,6 @@ color: #ffffff;
     font-weight: bold;
 }
 
-.card-image-placeholder img {
-    width: 100%;
-    height: 180px;
-    object-fit: cover;
-    display: block;
-}
-
-.card-image-placeholder {
-    width: 100%;
-    height: 180px;
-    overflow: hidden;
-}
 
 /* ==========================================================================
 8. ABOUT SECTION
@@ -888,3 +895,583 @@ VERY SMALL PHONES
     font-weight: 700;
 }
 
+
+/* =========================================
+   RESPONSIVE CUSTOMER NAVBAR LOGO
+   ========================================= */
+
+/* Desktop */
+.shop-navbar .brand-logo {
+    width: 56px;
+    height: 56px;
+    max-width: 100%;
+    object-fit: contain;
+}
+
+
+/* CUSTOMER STOREFRONT LOGO SIZE */
+.shop-navbar .nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+}
+
+.shop-navbar .brand-logo {
+    width: 52px !important;
+    height: 52px !important;
+    max-width: 52px !important;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+/* Mobile */
+@media screen and (max-width: 700px) {
+    .shop-navbar {
+        padding: 10px 12px;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+    }
+
+    .shop-navbar .brand-logo {
+        width: 38px !important;
+        height: 38px !important;
+        max-width: 38px !important;
+    }
+
+    .shop-navbar .brand-name {
+        font-size: 14px;
+        line-height: 1.2;
+    }
+}
+
+/* Very small phones */
+@media screen and (max-width: 380px) {
+    .shop-navbar .brand-logo {
+        width: 32px !important;
+        height: 32px !important;
+        max-width: 32px !important;
+    }
+
+    .shop-navbar .brand-name {
+        font-size: 12px;
+    }
+}
+
+
+/* =========================================
+   ORDER CHECKOUT LAYOUT
+========================================= */
+
+.checkout-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+    gap: 28px;
+    max-width: 1200px;
+    margin: 35px auto;
+    padding: 0 24px;
+    align-items: start;
+}
+
+.checkout-panel {
+    background: #FFFFFF;
+    border: 1px solid #E5E9F0;
+    border-radius: 12px;
+    padding: 24px;
+    min-width: 0;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+}
+
+.checkout-panel h2 {
+    color: #1B5E20;
+    font-size: 21px;
+    margin-bottom: 8px;
+}
+
+.checkout-subtitle {
+    color: #718096;
+    font-size: 13px;
+    margin-bottom: 22px;
+}
+
+/* Customer information displayed as text */
+
+.customer-profile {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.customer-profile-row {
+    padding-bottom: 12px;
+    border-bottom: 1px solid #F0F4F8;
+    overflow-wrap: anywhere;
+}
+
+.customer-profile-label {
+    display: block;
+    color: #718096;
+    font-size: 12px;
+    margin-bottom: 4px;
+}
+
+.customer-profile-value {
+    display: block;
+    color: #2D3748;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.checkout-notes {
+    margin-top: 22px;
+}
+
+.checkout-notes label {
+    display: block;
+    color: #2D3748;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.checkout-notes textarea {
+    width: 100%;
+    min-height: 110px;
+    padding: 12px;
+    border: 1px solid #CBD5E0;
+    border-radius: 8px;
+    resize: vertical;
+    font: inherit;
+}
+
+.checkout-notes textarea:focus {
+    outline: 2px solid #C8E6C9;
+    border-color: #2E7D32;
+}
+
+/* Cart list */
+
+.visual-cart {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Product row: image | details | quantity + remove */
+.cart-product-card {
+    display: grid;
+    grid-template-columns: 90px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+    border: 1px solid #E5E9F0;
+    border-radius: 12px;
+    background: #FFFFFF;
+}
+
+.cart-product-image {
+    width: 90px;
+    height: 90px;
+    overflow: hidden;
+    border-radius: 8px;
+}
+
+.cart-product-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.cart-product-info {
+    min-width: 0;
+}
+
+.cart-product-info h4 {
+    margin: 0 0 7px;
+    color: #263238;
+}
+
+.cart-product-info p {
+    margin: 0 0 5px;
+}
+
+.cart-product-info small {
+    color: #687580;
+}
+
+.cart-product-actions {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: flex-end;
+    justify-content: flex-end;
+    gap: 10px;
+    grid-column: 1 / -1;
+    width: 100%;
+    min-width: 0;
+    margin-top: 8px;
+}
+
+.cart-quantity {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+    margin: 0;
+}
+
+.cart-quantity label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #687580;
+}
+
+.cart-quantity input[type="number"] {
+    width: 70px;
+    height: 40px;
+    padding: 7px;
+    border: 1px solid #D1D5DB;
+    border-radius: 8px;
+    box-sizing: border-box;
+}
+
+.cart-remove-button {
+    height: 40px;
+    padding: 0 12px;
+    border: 1px solid #FECACA;
+    border-radius: 8px;
+    background: #FEF2F2;
+    color: #B91C1C;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.cart-remove-button:hover {
+    background: #FEE2E2;
+}
+
+/* Order total */
+
+.checkout-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-top: 20px;
+    padding: 18px 0;
+    border-top: 1px solid #E5E9F0;
+    font-weight: 700;
+}
+
+.checkout-total strong {
+    color: #1B5E20;
+    font-size: 23px;
+}
+
+/* Checkout action buttons */
+
+.checkout-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.checkout-actions button,
+.checkout-actions a {
+    display: block;
+    width: 100%;
+    padding: 13px 16px;
+    border-radius: 7px;
+    text-align: center;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.btn-checkout-submit {
+    background: #2E7D32;
+    border: 1px solid #2E7D32;
+    color: #FFFFFF;
+}
+
+.btn-checkout-submit:hover {
+    background: #1B5E20;
+}
+
+.btn-checkout-continue {
+    background: #FFFFFF;
+    border: 1px solid #2E7D32;
+    color: #2E7D32;
+}
+
+.btn-checkout-continue:hover {
+    background: #E8F5E9;
+}
+
+.cart-empty {
+    padding: 24px 12px;
+    text-align: center;
+    color: #718096;
+    background: #F7FAFC;
+    border-radius: 8px;
+}
+
+/* =========================================
+   CONSOLIDATED MOBILE CHECKOUT
+========================================= */
+
+@media (max-width: 760px) {
+    .checkout-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        width: 100%;
+        max-width: 100%;
+        margin: 20px auto;
+        padding: 0 12px;
+        gap: 16px;
+        box-sizing: border-box;
+    }
+
+    .checkout-panel {
+        width: 100%;
+        min-width: 0;
+        max-width: 100%;
+        padding: 16px;
+        box-sizing: border-box;
+    }
+
+    .checkout-layout *,
+    .checkout-panel {
+        min-width: 0;
+        box-sizing: border-box;
+    }
+
+    .checkout-panel h2 {
+        font-size: 19px;
+    }
+
+    .checkout-subtitle {
+        margin-bottom: 16px;
+    }
+
+    .customer-profile {
+        gap: 12px;
+    }
+
+    .customer-profile-row,
+    .cart-product-info {
+        overflow-wrap: anywhere;
+    }
+
+    .cart-product-card {
+        display: grid;
+        grid-template-columns: 60px minmax(0, 1fr);
+        align-items: start;
+        gap: 10px;
+        width: 100%;
+        min-width: 0;
+        padding: 12px;
+    }
+
+    .cart-product-image {
+        grid-column: 1;
+        grid-row: 1;
+        width: 60px;
+        height: 60px;
+    }
+
+    .cart-product-image img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .cart-product-info {
+        grid-column: 2;
+        grid-row: 1;
+    }
+
+    .cart-product-info h4 {
+        font-size: 15px;
+        line-height: 1.35;
+    }
+
+    .cart-product-info p {
+        font-size: 13px;
+    }
+
+    .cart-product-actions {
+        grid-column: 1 / -1;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+        align-items: flex-end;
+        gap: 10px;
+        width: 100%;
+        min-width: 0;
+        margin-top: 8px;
+    }
+
+    .cart-quantity {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+        margin: 0;
+    }
+
+    .cart-quantity input[type="number"] {
+        width: 85px;
+        max-width: 100%;
+        height: 42px;
+        margin: 0;
+        font-size: 16px;
+    }
+
+    .cart-remove-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 70px;
+        min-height: 42px;
+        height: auto;
+        margin: 0;
+        padding: 9px 12px;
+        white-space: nowrap;
+    }
+
+    .checkout-total {
+        flex-wrap: wrap;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .checkout-total strong {
+        font-size: 21px;
+        overflow-wrap: anywhere;
+    }
+
+    .checkout-notes textarea {
+        font-size: 16px;
+    }
+
+    .checkout-actions button,
+    .checkout-actions a {
+        min-height: 44px;
+    }
+}
+
+/* =========================================
+   CONSOLIDATED MOBILE ORDER TRACKING
+========================================= */
+
+@media (max-width: 800px) {
+    .track-page-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 16px;
+        width: 100%;
+        max-width: 100%;
+        margin: 20px auto;
+        padding: 0 14px;
+        box-sizing: border-box;
+    }
+
+    .track-page-layout > section {
+        width: 100%;
+        min-width: 0;
+        max-width: 100%;
+        padding: 16px;
+        border-radius: 12px;
+        box-sizing: border-box;
+    }
+
+    .track-orders-panel h2,
+    .track-details-panel h2 {
+        overflow-wrap: anywhere;
+    }
+
+    .track-order-item {
+        display: block;
+        width: 100%;
+        min-width: 0;
+        padding: 12px;
+        overflow-wrap: anywhere;
+        box-sizing: border-box;
+    }
+
+    .track-details-panel,
+    .order-card {
+        overflow-wrap: anywhere;
+    }
+
+    .track-table-wrapper {
+        display: block;
+        width: 100%;
+        max-width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .track-products-table {
+        width: 100%;
+        min-width: 520px;
+        font-size: 13px;
+    }
+
+    .track-products-table th,
+    .track-products-table td {
+        padding: 10px 8px;
+        overflow-wrap: anywhere;
+    }
+
+    .timeline .step {
+        align-items: flex-start;
+        overflow-wrap: anywhere;
+    }
+}
+
+/* =========================================
+   VERY SMALL PHONES
+========================================= */
+
+@media (max-width: 380px) {
+    .checkout-layout,
+    .track-page-layout {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    .checkout-panel,
+    .track-page-layout > section {
+        padding: 12px;
+    }
+
+    .cart-product-card {
+        grid-template-columns: 54px minmax(0, 1fr);
+        gap: 8px;
+        padding: 9px;
+    }
+
+    .cart-product-image {
+        width: 54px;
+        height: 54px;
+    }
+
+    .cart-quantity input[type="number"] {
+        width: 75px;
+    }
+
+    .cart-remove-button {
+        padding: 8px 9px;
+        font-size: 12px;
+    }
+
+    .checkout-total strong {
+        font-size: 19px;
+    }
+}

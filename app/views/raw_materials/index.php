@@ -162,62 +162,45 @@
 
                             </td>
 
+<!-- QUANTITY -->
 
-                            <!-- QUANTITY -->
+<td>
+    <?= htmlspecialchars(
+        rtrim(
+            rtrim(number_format((float) $material['quantity'], 2, '.', ''), '0'),
+            '.'
+        )
+    ); ?>
 
-                            <td>
+    <?php if (
+        $material['quantity'] <= $material['reorder_level']
+        && $material['status'] === 'Active'
+    ): ?>
+        <span style="
+            display:inline-block;
+            margin-left:6px;
+            padding:3px 7px;
+            border-radius:4px;
+            background:#FFEBEE;
+            color:#C62828;
+            font-size:11px;
+            font-weight:600;
+        ">LOW STOCK</span>
+    <?php endif; ?>
+</td>
+                            
+     <!-- REORDER LEVEL -->
 
-                                <?= htmlspecialchars(
-                                    $material['quantity']
-                                ); ?>
-
-                                <?= htmlspecialchars(
-                                    $material['unit']
-                                ); ?>
-
-
-                                <?php if (
-                                    $material['quantity']
-                                    <= $material['reorder_level']
-                                    &&
-                                    $material['status'] === 'Active'
-                                ): ?>
-
-                                    <span
-                                        style="
-                                            display:inline-block;
-                                            margin-left:6px;
-                                            padding:3px 7px;
-                                            border-radius:4px;
-                                            background:#FFEBEE;
-                                            color:#C62828;
-                                            font-size:11px;
-                                            font-weight:600;
-                                        "
-                                    >
-                                        LOW STOCK
-                                    </span>
-
-                                <?php endif; ?>
-
-                            </td>
-
-
-                            <!-- REORDER LEVEL -->
-
-                            <td>
-
-                                <?= htmlspecialchars(
-                                    $material['reorder_level']
-                                ); ?>
-
-                                <?= htmlspecialchars(
-                                    $material['unit']
-                                ); ?>
-
-                            </td>
-
-
+<td>
+    <?= htmlspecialchars(
+        rtrim(
+            rtrim(number_format((float) $material['reorder_level'], 2, '.', ''), '0'),
+            '.'
+        )
+    ); ?>
+</td>
+                            
+                            
                             <!-- STATUS -->
 
                             <td>

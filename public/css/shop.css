@@ -1365,6 +1365,143 @@ VERY SMALL PHONES
     }
 }
 
+
+/* =========================================
+   DESKTOP ORDER TRACKING LAYOUT
+========================================= */
+
+.track-page-layout {
+    display: grid;
+    grid-template-columns: minmax(280px, 0.85fr) minmax(0, 1.8fr);
+    gap: 24px;
+
+    width: 90%;
+    max-width: 1400px;
+    margin: 35px auto;
+
+    align-items: start;
+}
+
+.track-orders-panel,
+.track-details-panel {
+    min-width: 0;
+    width: 100%;
+    padding: 24px;
+    background: #FFFFFF;
+    border: 1px solid #E5E9F0;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+}
+
+.track-orders-panel {
+    overflow: hidden;
+}
+
+.track-details-panel {
+    overflow: hidden;
+}
+
+.track-order-item {
+    width: 100%;
+    min-width: 0;
+    padding: 16px;
+    margin-bottom: 14px;
+    background: #FAFAFA;
+    border: 1px solid #E5E9F0;
+    border-radius: 10px;
+    overflow-wrap: anywhere;
+}
+
+/* Remove default link styling from My Orders cards */
+.track-order-item,
+.track-order-item:visited,
+.track-order-item:hover,
+.track-order-item:active {
+    display: block;
+    text-decoration: none !important;
+    color: inherit;
+}
+
+.track-order-item:hover {
+    background: #F3F6EF;
+    border-color: #6B8E3B;
+}
+
+.track-order-item strong,
+.track-order-item p,
+.track-order-item span {
+    text-decoration: none !important;
+}
+
+.track-table-wrapper {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.track-products-table {
+    width: 100%;
+    min-width: 520px;
+    border-collapse: collapse;
+    table-layout: auto;
+}
+
+.track-products-table th,
+.track-products-table td {
+    padding: 12px 10px;
+    text-align: left;
+    vertical-align: middle;
+    border-bottom: 1px solid #E5E9F0;
+}
+
+.track-products-table th {
+    background: #F7FAFC;
+    color: #4A5568;
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+.track-products-table td {
+    font-size: 14px;
+}
+
+.track-details-panel h2,
+.track-orders-panel h2 {
+    overflow-wrap: anywhere;
+}
+
+/* Prevent order details from overflowing */
+.track-details-panel * {
+    max-width: 100%;
+}
+
+.track-details-panel .track-table-wrapper {
+    max-width: 100%;
+}
+
+/* Keep order totals properly aligned */
+.track-details-panel .order-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+
+/* Remove default link underlines in order cards */
+.track-order-item a {
+    text-decoration: none !important;
+    color: inherit;
+}
+
+.track-order-item a:hover {
+    color: #1B5E20;
+    text-decoration: none !important;
+}
+
+
 /* =========================================
    CONSOLIDATED MOBILE ORDER TRACKING
 ========================================= */

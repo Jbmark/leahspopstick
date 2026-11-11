@@ -37,7 +37,7 @@
             <a href="products.php">Product List</a>
             <a href="inventory.php">Inventory Batches</a>
             <a href="raw_materials.php">Raw Materials</a>
-            <a href="expenses.php">Expenses Ledger</a>
+            <a href="expenses.php">Expenses Records</a>
             <a href="reports.php">Reports</a>
             <a href="users.php">Users</a>
 

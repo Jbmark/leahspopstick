@@ -155,30 +155,7 @@ if (!$order) {
         $stockSnapshots = $snapshotStmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }
-
-        if ($order['status'] === 'Completed') {
-            $snapshotStmt = $pdo->prepare("
-                SELECT
-                    oss.quantity_ordered,
-                    oss.stock_before,
-                    oss.stock_after,
-                    oss.recorded_at,
-                    p.product_name,
-                    p.unit
-                FROM order_stock_snapshots oss
-                INNER JOIN products p
-                    ON p.product_id = oss.product_id
-                WHERE oss.order_id = ?
-                ORDER BY p.product_name ASC
-            ");
-
-            $snapshotStmt->execute([
-                $order['order_id']
-            ]);
-
-            $stockSnapshots = $snapshotStmt->fetchAll(PDO::FETCH_ASSOC);
-        }
-    }
+}
 
 ?>
 
@@ -199,7 +176,7 @@ content="width=device-width, initial-scale=1.0"
 
 <title>Track Order - Leah's Popstick</title>
 
-   <link rel="stylesheet" href="../css/shop.css?v=logo-fix1"> 
+   <link rel="stylesheet" href="../css/shop.css?v=track-layout-fix1">
 
 </head>
 

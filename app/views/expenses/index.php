@@ -5,7 +5,7 @@
 
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 25px;">
         <div>
-            <h1>Expenditures Audit Ledger</h1>
+            <h1>Expenses Records</h1>
             <p style="color:#7A869A; font-size:14px; margin:0;">Chronological financial outlays and material acquisition logs.</p>
         </div>
         <a href="expenses.php?action=create" class="btn">+ New Expense Item</a>

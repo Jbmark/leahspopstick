@@ -12,9 +12,25 @@
     <div class="card" style="max-width:600px;">
         <form method="POST">
             <div class="form-group">
-                <label>Expense Name</label>
-                <input type="text" name="expense_name" required placeholder="e.g., Falcata Lumber Trucking Log">
-            </div>
+    <label>Expense Name</label>
+    <input type="text" name="expense_name" required placeholder="e.g., Falcata Lumber Trucking Log">
+</div>
+
+        <div class="form-group">
+            <label>Expense Category</label>
+            <select name="category" required>
+                <option value="">Select Category</option>
+                <option value="Raw Materials">Raw Materials</option>
+                <option value="Packaging Materials">Packaging Materials</option>
+                <option value="Labor Cost">Labor Cost</option>
+                <option value="Utilities">Utilities</option>
+                <option value="Fuel">Fuel</option>
+                <option value="Repair and Maintenance">Repair and Maintenance</option>
+                <option value="Taxes and Licenses">Taxes and Licenses</option>
+                <option value="Employee Contributions">Employee Contributions</option>
+                <option value="Office Supplies">Office Supplies</option>
+            </select>
+        </div>
 
             <div class="form-group">
                 <label>Total Capital Amount (₱)</label>

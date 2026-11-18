@@ -103,22 +103,22 @@ tr:nth-child(even) td {
 <body>
 
 <div class="header">
-    <h2>Leah's Popstick - Commercial Sales Audit Log</h2>
-    <p>Monthly Performance Report Allocation Overview: <b><?= date('F Y'); ?></b></p>
+    <h2>Leah's Popstick - Monthly Sales Report</h2>
+    <p>Reporting Period: <b><?= date('F Y'); ?></b></p>
 </div>
 
 <table>
     <thead>
         <tr>
-            <th>Order Document Ticket</th>
-            <th>Customer Client Entity</th>
-            <th>Fulfillment Completion Date</th>
-            <th style="text-align: right;">Total Realized Value</th>
+            <th>Order ID</th>
+            <th>Customer Name</th>
+            <th>Completion Date</th>
+            <th style="text-align: right;">Order Total</th>
         </tr>
     </thead>
     <tbody>
         <?php if(empty($recent)) { ?>
-            <tr><td colspan="4" style="text-align:center; color:#7A869A; padding:30px;">No realized sales logs logged for the current duration context.</td></tr>
+            <tr><td colspan="4" style="text-align:center; color:#7A869A; padding:30px;">No completed sales recorded for this month.</td></tr>
         <?php } else { 
             foreach($recent as $sale) { ?>
             <tr>
@@ -133,12 +133,12 @@ tr:nth-child(even) td {
 
 <div style="width: 100%; overflow: hidden;">
     <div class="summary-block">
-        <h3>Total Monthly Income Yield: ₱<?= number_format($monthlySales, 2); ?></h3>
+        <h3>Total Gross Sales: ₱<?= number_format($monthlySales, 2); ?></h3>
     </div>
 </div>
 
 <button onclick="window.print()" class="btn-print no-print">
-    🖨️ Execute Native Document Print
+    🖨️ Print Report
 </button>
 
 </body>

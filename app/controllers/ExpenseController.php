@@ -30,6 +30,7 @@ class ExpenseController{
             try {
                 $this->expenseModel->createExpense(
                     $_POST['expense_name'],
+                    $_POST['category'],
                     $_POST['description'],
                     $_POST['amount'],
                     $_POST['expense_date'],

@@ -44,13 +44,15 @@
         <?php } ?>
 
         <!-- BOOKKEEPER -->
-        <?php if ($role === "Bookkeeper") { ?>
+<?php if ($role === "Bookkeeper") { ?>
 
-            <a href="index.php">Dashboard</a>
-            <a href="expenses.php">Expenses Ledger</a>
-            <a href="reports.php">Reports</a>
+    <a href="index.php">Dashboard</a>
+    <a href="orders.php">Orders</a>
+    <a href="inventory.php">Inventory Batches</a>
+    <a href="expenses.php">Expenses Ledger</a>
+    <a href="reports.php">Reports</a>
 
-        <?php } ?>
+<?php } ?>
 
         <!-- OFFICE STAFF -->
         <?php if ($role === "Office Staff") { ?>

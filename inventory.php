@@ -12,7 +12,7 @@ if (!isset($_SESSION['user'])) {
  */
 $role = $_SESSION['user']['role_name'] ?? '';
 
-if (!in_array($role, ['Owner', 'Office Staff'])) {
+if (!in_array($role, ['Owner', 'Office Staff', 'Bookkeeper'])) {
     die("Access Denied.");
 }
 

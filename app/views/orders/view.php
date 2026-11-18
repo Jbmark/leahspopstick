@@ -647,20 +647,6 @@ $mapsUrl = $deliveryAddress !== ''
                         "
                     >
 
-                    <?php if (($_SESSION['user']['role_name'] ?? '') == 'Bookkeeper') { ?>
-
-                        <p
-                            style="
-                                text-align:center;
-                                color:#7A869A;
-                                font-size:13px;
-                                font-style:italic;
-                            "
-                        >
-                            Bookkeeper access is view-only.
-                        </p>
-
-                    <?php } else { ?>
 
                         <!-- PENDING -->
                         <?php if ($order['status'] == 'Pending') { ?>
@@ -788,8 +774,6 @@ $mapsUrl = $deliveryAddress !== ''
                                 This order has been cancelled.
                                 No further workflow actions are available.
                             </p>
-
-                        <?php } ?>
 
                     <?php } ?>
 

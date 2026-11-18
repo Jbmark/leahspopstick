@@ -41,7 +41,7 @@ class OrderController
             */
             case 'create':
 
-                $this->checkPermission(['Owner', 'Office Staff']);
+                $this->checkPermission(['Owner', 'Office Staff', 'Bookkeeper']);
 
                 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
@@ -125,7 +125,7 @@ class OrderController
             */
             case 'processing':
 
-                $this->checkPermission(['Owner', 'Office Staff']);
+                $this->checkPermission(['Owner', 'Office Staff', 'Bookkeeper']);
 
                 $id = intval($_GET['id']);
 
@@ -165,7 +165,7 @@ class OrderController
             */
             case 'complete':
 
-                $this->checkPermission(['Owner', 'Office Staff']);
+                $this->checkPermission(['Owner', 'Office Staff', 'Bookkeeper']);
 
                 $id = intval($_GET['id']);
 

@@ -394,16 +394,14 @@ case 'view_batch':
 */
 public function consumeFIFO($order_id)
 {
-    global $pdo;
-
     try {
-    $pdo->beginTransaction();
+    $this->pdo->beginTransaction();
 
     /*
      * Lock the order and verify its current status.
      * This helps prevent duplicate completion attempts.
      */
-    $orderStmt = $pdo->prepare("
+    $orderStmt = $this->pdo->prepare("
         SELECT status
         FROM orders
         WHERE order_id = ?
@@ -426,7 +424,7 @@ public function consumeFIFO($order_id)
     /*
      * Get all products and quantities in this order.
      */
-        $stmt = $pdo->prepare("
+        $stmt = $this->pdo->prepare("
             SELECT product_id, SUM(quantity) AS quantity
             FROM order_details
             WHERE order_id = ?
@@ -445,7 +443,7 @@ public function consumeFIFO($order_id)
         /*
          * Prepare snapshot insert.
          */
-        $snapshotStmt = $pdo->prepare("
+        $snapshotStmt = $this->pdo->prepare("
             INSERT INTO order_stock_snapshots
             (
                 order_id,
@@ -466,12 +464,18 @@ public function consumeFIFO($order_id)
             $product_id = (int)$item['product_id'];
             $needed = (int)$item['quantity'];
             $quantity_ordered = $needed;
+            
+            if ($needed <= 0) {
+            throw new Exception(
+                "Invalid quantity for Product ID: " . $product_id
+            );
+        }
 
             /*
              * Get total stock across all batches
              * before deduction.
              */
-            $stockStmt = $pdo->prepare("
+            $stockStmt = $this->pdo->prepare("
                 SELECT COALESCE(SUM(quantity_remaining), 0)
                 FROM inventory_batches
                 WHERE product_id = ?
@@ -484,13 +488,14 @@ public function consumeFIFO($order_id)
              * Get available FIFO batches:
              * oldest batch first.
              */
-            $batchStmt = $pdo->prepare("
+            $batchStmt = $this->pdo->prepare("
                 SELECT *
                 FROM inventory_batches
                 WHERE product_id = ?
                   AND quantity_remaining > 0
                   AND status = 'Available'
                 ORDER BY date_received ASC, batch_id ASC
+                FOR UPDATE
             ");
 
             $batchStmt->execute([$product_id]);
@@ -515,7 +520,7 @@ public function consumeFIFO($order_id)
                 /*
                  * Update the FIFO batch.
                  */
-                $update = $pdo->prepare("
+                $update = $this->pdo->prepare("
                     UPDATE inventory_batches
                     SET quantity_remaining = ?,
                         status = CASE
@@ -534,7 +539,7 @@ public function consumeFIFO($order_id)
                 /*
                  * Record the Stock Out transaction.
                  */
-                $log = $pdo->prepare("
+                $log = $this->pdo->prepare("
                     INSERT INTO inventory_transactions
                     (
                         product_id,
@@ -586,7 +591,7 @@ public function consumeFIFO($order_id)
  * Mark the order Completed in the same transaction
  * as the FIFO deductions and stock snapshots.
  */
-$statusStmt = $pdo->prepare("
+$statusStmt = $this->pdo->prepare("
     UPDATE orders
     SET status = 'Completed',
         completed_at = NOW()
@@ -606,7 +611,7 @@ if ($statusStmt->rowCount() !== 1) {
  * Commit inventory deductions, snapshots, and
  * order status together.
  */
-$pdo->commit();
+$this->pdo->commit();
 
 return true;
         
@@ -616,8 +621,8 @@ return true;
          * Roll back both inventory changes and
          * snapshots if anything fails.
          */
-        if ($pdo->inTransaction()) {
-            $pdo->rollBack();
+        if ($this->pdo->inTransaction()) {
+            $this->pdo->rollBack();
         }
 
         throw $e;
@@ -638,16 +643,15 @@ return true;
  */
 public function cancelOrderAndRestoreInventory($order_id)
 {
-    global $pdo;
 
     try {
-        $pdo->beginTransaction();
+        $this->pdo->beginTransaction();
 
         /*
          * Lock the order first so two cancellation requests
          * cannot restore the same order concurrently.
          */
-        $orderStmt = $pdo->prepare("
+        $orderStmt = $this->pdo->prepare("
             SELECT order_id, status
             FROM orders
             WHERE order_id = ?
@@ -687,7 +691,7 @@ public function cancelOrderAndRestoreInventory($order_id)
              * has Return records. Stop instead of risking a
              * duplicate restoration.
              */
-            $returnCheck = $pdo->prepare("
+            $returnCheck = $this->pdo->prepare("
                 SELECT COUNT(*)
                 FROM inventory_transactions
                 WHERE reference_id = ?
@@ -707,7 +711,7 @@ public function cancelOrderAndRestoreInventory($order_id)
             /*
              * Retrieve the original FIFO Stock Out records.
              */
-            $logs = $pdo->prepare("
+            $logs = $this->pdo->prepare("
                 SELECT
                     transaction_id,
                     product_id,
@@ -730,16 +734,17 @@ public function cancelOrderAndRestoreInventory($order_id)
                 );
             }
 
-            $restore = $pdo->prepare("
-                UPDATE inventory_batches
-                SET
-                    quantity_remaining = quantity_remaining + ?,
-                    status = 'Available'
-                WHERE batch_id = ?
-                  AND product_id = ?
-            ");
+           $restore = $this->pdo->prepare("
+            UPDATE inventory_batches
+            SET
+                quantity_remaining = quantity_remaining + ?,
+                status = 'Available'
+            WHERE batch_id = ?
+              AND product_id = ?
+              AND quantity_remaining + ? <= quantity_received
+        ");
 
-            $returnLog = $pdo->prepare("
+            $returnLog = $this->pdo->prepare("
                 INSERT INTO inventory_transactions (
                     product_id,
                     batch_id,
@@ -772,7 +777,8 @@ public function cancelOrderAndRestoreInventory($order_id)
                 $restore->execute([
                     $row['quantity'],
                     $row['batch_id'],
-                    $row['product_id']
+                    $row['product_id'],
+                    $row['quantity']
                 ]);
 
                 if ($restore->rowCount() !== 1) {
@@ -801,7 +807,7 @@ public function cancelOrderAndRestoreInventory($order_id)
          * Change the status inside the same transaction.
          * If this fails, the inventory restoration rolls back too.
          */
-        $updateOrder = $pdo->prepare("
+        $updateOrder = $this->pdo->prepare("
             UPDATE orders
             SET
                 status = 'Cancelled',
@@ -822,14 +828,14 @@ public function cancelOrderAndRestoreInventory($order_id)
             );
         }
 
-        $pdo->commit();
+        $this->pdo->commit();
 
         return $originalStatus;
 
     } catch (Exception $e) {
 
-        if ($pdo->inTransaction()) {
-            $pdo->rollBack();
+        if ($this->pdo->inTransaction()) {
+            $this->pdo->rollBack();
         }
 
         throw $e;

@@ -127,6 +127,9 @@ public function dashboard()
 );
     $summary = $this->reportModel->getMonthlySummary();
     $inventory = $this->reportModel->getInventorySummary();
+    $periodExpenses = $this->reportModel->getExpensesForPeriod($fromDate, $toDate);
+    $orderStatusSummary = $this->reportModel->getOrderStatusSummary($fromDate, $toDate);
+    $bestSellingProducts = $this->reportModel->getBestSellingProducts($fromDate, $toDate);
 
     $periodLabel = ucfirst($period);
 

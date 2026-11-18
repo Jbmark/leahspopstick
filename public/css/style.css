@@ -1367,3 +1367,409 @@ table {
     }
 }
 
+
+/* =========================================
+   REPORTS DASHBOARD - MODERN DESIGN
+========================================= */
+
+.reports-dashboard {
+    background: #F5F7FA;
+    min-height: 100vh;
+}
+
+.reports-dashboard .content {
+    background: #F5F7FA;
+}
+
+.reports-dashboard .card {
+    background: #FFFFFF;
+    border: 1px solid #E8EDF2;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+    transition: box-shadow 0.2s ease;
+}
+
+.reports-dashboard .card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 16px rgba(15, 23, 42, 0.08);
+}
+
+.reports-dashboard h1 {
+    color: #172B4D;
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+.reports-dashboard .card h3,
+.reports-dashboard .card h4 {
+    color: #52627A;
+}
+
+.reports-dashboard .card p {
+    color: #1B5E20;
+    font-weight: 700;
+}
+
+.reports-dashboard table th {
+    color: #52627A;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.reports-dashboard table td {
+    font-size: 13px;
+    color: #344054;
+}
+
+.reports-dashboard table tbody tr:hover {
+    background: #F8FAFC;
+}
+
+.reports-dashboard .reports-section {
+    margin-bottom: 24px;
+}
+
+.reports-dashboard .reports-section-title {
+    color: #26364B;
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 5px;
+    text-transform: none;
+    letter-spacing: 0;
+}
+
+.reports-dashboard .reports-section-description {
+    color: #8491A5;
+    font-size: 13px;
+    margin: 0;
+}
+
+@media screen and (max-width: 700px) {
+    .reports-dashboard .content {
+        padding: 20px 16px;
+    }
+
+    .reports-dashboard h1 {
+        font-size: 22px;
+    }
+}
+
+
+/* REPORTS PERFORMANCE GRID */
+.reports-performance-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+    align-items: start;
+    width: 100%;
+    min-width: 0;
+    margin-bottom: 30px;
+}
+
+.reports-performance-grid > * {
+    min-width: 0;
+}
+
+/* Responsive layout */
+@media screen and (max-width: 900px) {
+    .reports-performance-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 20px;
+    }
+}
+
+
+/* REPORTS ORDERS GRID */
+.reports-orders-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+    gap: 24px;
+    align-items: stretch;
+    width: 100%;
+    min-width: 0;
+    margin-bottom: 30px;
+}
+
+.reports-orders-grid > * {
+    min-width: 0;
+}
+
+/* Responsive layout */
+@media screen and (max-width: 900px) {
+    .reports-orders-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 20px;
+    }
+}
+
+
+/* INVENTORY KPI GRID */
+.reports-dashboard .inventory-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.reports-dashboard .inventory-kpi-grid .card {
+    min-width: 0;
+    padding: 20px;
+    margin: 0;
+}
+
+.reports-dashboard .inventory-kpi-grid .card h4 {
+    font-size: 13px;
+    color: #64748B;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+.reports-dashboard .inventory-kpi-grid .card p {
+    font-size: 25px;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+}
+
+
+/* INVENTORY DATA TABLE */
+.reports-dashboard .reports-data-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #FFFFFF;
+}
+
+.reports-dashboard .reports-data-table th {
+    background: #F8FAFC;
+    color: #52627A;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 14px 16px;
+    text-align: left;
+    border-bottom: 1px solid #E5E9F0;
+    white-space: nowrap;
+}
+
+.reports-dashboard .reports-data-table td {
+    padding: 14px 16px;
+    color: #344054;
+    font-size: 13px;
+    border-bottom: 1px solid #E5E9F0;
+}
+
+.reports-dashboard .reports-data-table tbody tr:hover {
+    background: #F8FAFC;
+}
+
+.reports-dashboard .reports-data-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+
+/* CONSISTENT REPORT SECTION SPACING */
+.reports-dashboard .reports-performance-grid,
+.reports-dashboard .reports-orders-grid {
+    margin-bottom: 24px;
+}
+
+.reports-dashboard .reports-chart-card,
+.reports-dashboard .reports-orders-card {
+    height: 100%;
+}
+
+.reports-dashboard .reports-orders-grid > .card {
+    height: 100%;
+}
+
+.reports-dashboard .reports-data-table {
+    margin-top: 8px;
+}
+
+.reports-dashboard .inventory-kpi-grid {
+    margin-top: 18px;
+}
+
+
+/* ORDER STATUS KPI GRID */
+.reports-dashboard .order-status-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.reports-dashboard .order-status-grid .card {
+    min-width: 0;
+    padding: 18px;
+    margin: 0;
+}
+
+@media screen and (max-width: 600px) {
+    .reports-dashboard .order-status-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+/* REPORT PERIOD FILTER */
+.reports-dashboard .reports-filter-form {
+    display: flex;
+    gap: 16px;
+    align-items: end;
+    flex-wrap: wrap;
+}
+
+.reports-dashboard .reports-filter-form > div:first-child {
+    width: 240px;
+}
+
+.reports-dashboard .reports-filter-form select {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.reports-dashboard .reports-filter-form input[type="date"] {
+    min-width: 180px;
+    box-sizing: border-box;
+}
+
+.reports-dashboard .reports-filter-form button,
+.reports-dashboard .reports-filter-form a {
+    min-height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+}
+
+@media screen and (max-width: 700px) {
+    .reports-dashboard .reports-filter-form > div:first-child {
+        width: 100%;
+    }
+
+    .reports-dashboard .reports-filter-form input[type="date"] {
+        width: 100%;
+        min-width: 0;
+    }
+}
+
+
+/* RESPONSIVE DASHBOARD FIXES */
+
+/* Prevent status labels from overflowing */
+.reports-dashboard .order-status-grid {
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+}
+
+.reports-dashboard .order-status-grid .card {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+/* Let cards keep their natural height */
+.reports-dashboard .reports-orders-grid {
+    align-items: start;
+}
+
+.reports-dashboard .reports-orders-grid > .card,
+.reports-dashboard .reports-orders-grid .reports-orders-card {
+    height: auto;
+}
+
+/* Mobile layout */
+@media screen and (max-width: 768px) {
+
+    .reports-dashboard .reports-performance-grid,
+    .reports-dashboard .reports-orders-grid {
+        grid-template-columns: minmax(0, 1fr);
+        width: 100%;
+    }
+
+    .reports-dashboard .inventory-kpi-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .reports-dashboard .order-status-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    /* Prevent filter controls from overflowing */
+    .reports-dashboard .reports-filter-form {
+        width: 100%;
+        flex-wrap: wrap;
+    }
+
+    .reports-dashboard .reports-filter-form > div:first-child {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .reports-dashboard .reports-filter-form select {
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    .reports-dashboard .reports-filter-form #customDateFields {
+        width: 100%;
+    }
+
+    .reports-dashboard .reports-filter-form #customDateFields > div {
+        flex: 1 1 160px;
+        min-width: 0;
+    }
+
+    .reports-dashboard .reports-filter-form input[type="date"] {
+        width: 100%;
+        min-width: 0;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    .reports-dashboard .reports-filter-form button,
+    .reports-dashboard .reports-filter-form a {
+        flex: 1 1 auto;
+    }
+}
+
+/* QUICK OVERVIEW KPI GRID */
+.reports-dashboard .quick-overview-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.reports-dashboard .quick-overview-grid .card {
+    min-width: 0;
+    margin: 0;
+    padding: 20px;
+}
+
+.reports-dashboard .quick-overview-grid .card h3 {
+    overflow-wrap: anywhere;
+    font-size: 13px;
+}
+
+.reports-dashboard .quick-overview-grid .card p {
+    overflow-wrap: anywhere;
+    font-size: 22px;
+}
+
+/* Tablet */
+@media screen and (max-width: 1024px) {
+    .reports-dashboard .quick-overview-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+/* Mobile */
+@media screen and (max-width: 768px) {
+    .reports-dashboard .quick-overview-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+/* Small mobile */
+@media screen and (max-width: 400px) {
+    .reports-dashboard .quick-overview-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}

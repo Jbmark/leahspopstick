@@ -68,14 +68,16 @@ class ReportModel{
      */
         // Total Expenses Tracker Sync
     public function getMonthlyExpenses(){
-        $stmt=$this->pdo->query("
-            SELECT IFNULL(SUM(amount),0)
-            FROM expenses
-            WHERE MONTH(expense_date)=MONTH(CURDATE())
-            AND YEAR(expense_date)=YEAR(CURDATE())
-        ");
-        return $stmt->fetchColumn();
-    }
+    $stmt = $this->pdo->query("
+        SELECT IFNULL(SUM(amount), 0)
+        FROM expenses
+        WHERE MONTH(expense_date) = MONTH(CURDATE())
+        AND YEAR(expense_date) = YEAR(CURDATE())
+        AND is_test = 0
+    ");
+
+    return $stmt->fetchColumn();
+}
 
 
     /**
@@ -195,10 +197,11 @@ public function getDateRangeSummary($fromDate, $toDate)
 
     // Expenses recorded within the selected dates
     $expenseStmt = $this->pdo->prepare("
-        SELECT IFNULL(SUM(amount), 0)
-        FROM expenses
-        WHERE expense_date BETWEEN ? AND ?
-    ");
+    SELECT IFNULL(SUM(amount), 0)
+    FROM expenses
+    WHERE expense_date BETWEEN ? AND ?
+    AND is_test = 0
+");
 
     $expenseStmt->execute([$fromDate, $toDate]);
     $expenses = (float) $expenseStmt->fetchColumn();
@@ -209,6 +212,79 @@ public function getDateRangeSummary($fromDate, $toDate)
         'profit' => $sales - $expenses
     ];
 }
+    
+    
+public function getExpensesForPeriod($fromDate, $toDate)
+{
+    $stmt = $this->pdo->prepare("
+        SELECT
+            expense_id,
+            expense_name,
+            category,
+            description,
+            amount,
+            expense_date
+        FROM expenses
+        WHERE expense_date BETWEEN ? AND ?
+        AND is_test = 0
+        ORDER BY expense_date DESC, expense_id DESC
+    ");
+
+    $stmt->execute([$fromDate, $toDate]);
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+    
+    public function getOrderStatusSummary($fromDate, $toDate)
+{
+    $stmt = $this->pdo->prepare("
+        SELECT
+            COUNT(*) AS total_orders,
+            SUM(CASE WHEN status = 'Pending' THEN 1 ELSE 0 END) AS pending_orders,
+            SUM(CASE WHEN status = 'Processing' THEN 1 ELSE 0 END) AS processing_orders,
+            SUM(CASE WHEN status = 'Completed' THEN 1 ELSE 0 END) AS completed_orders,
+            SUM(CASE WHEN status = 'Cancelled' THEN 1 ELSE 0 END) AS cancelled_orders
+        FROM orders
+        WHERE order_date >= ?
+        AND order_date < DATE_ADD(?, INTERVAL 1 DAY)
+    ");
+
+    $stmt->execute([$fromDate, $toDate]);
+
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
+    
+    
+public function getBestSellingProducts($fromDate, $toDate)
+{
+    $stmt = $this->pdo->prepare("
+        SELECT
+            p.product_id,
+            p.product_name,
+            p.unit,
+            SUM(od.quantity) AS total_quantity_sold,
+            SUM(od.subtotal) AS total_sales
+        FROM orders o
+        INNER JOIN order_details od
+            ON o.order_id = od.order_id
+        INNER JOIN products p
+            ON od.product_id = p.product_id
+        WHERE o.status = 'Completed'
+        AND o.completed_at >= ?
+        AND o.completed_at < DATE_ADD(?, INTERVAL 1 DAY)
+        GROUP BY
+            p.product_id,
+            p.product_name,
+            p.unit
+        ORDER BY total_quantity_sold DESC
+    ");
+
+    $stmt->execute([$fromDate, $toDate]);
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+
 
 public function getMonthlyCompletedOrders()
 {
